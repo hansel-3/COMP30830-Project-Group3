@@ -1,0 +1,13 @@
+try:
+    from dbinfo_local import *
+except ImportError:
+    pass
+
+STATIONS_URL = "https://api.jcdecaux.com/vls/v1/stations"
+API_KEY = ""
+CONTRACT = "dublin"
+
+OPENWEATHER_URL = "https://api.openweathermap.org/data/2.5/weather"
+OPENWEATHER_KEY = ""
+LAT = 53.3497
+LON = -6.2603
