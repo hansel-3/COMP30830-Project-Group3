@@ -205,3 +205,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# --- Project specific ---
+dbinfo_local.py
+dbinfo_local*.py
+*.jsonl
+data/
+stations_static.json
+weather_timeseries.jsonl
+bikes_timeseries.jsonl
+.DS_Store
