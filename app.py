@@ -1,10 +1,30 @@
 from flask import Flask, jsonify, request
+import os
+import pymysql
+from flask import g
 import datetime
 import requests
 import dbinfo
 
 app = Flask(__name__)
 
+def get_db():
+    if "db" not in g:
+        g.db = pymysql.connect(
+            host=os.getenv("DB_HOST", "127.0.0.1"),
+            user=os.getenv("DB_USER", "bikeapp"),
+            password=os.getenv("DB_PASSWORD"),
+            database=os.getenv("DB_NAME", "local_databasejcdecaux"),
+            cursorclass=pymysql.cursors.DictCursor,
+            autocommit=True,
+        )
+    return g.db
+
+@app.teardown_appcontext
+def close_db(_exc):
+    db = g.pop("db", None)
+    if db is not None:
+        db.close()
 def fetch_bikes_json():
     r = requests.get(
         dbinfo.STATIONS_URL,
@@ -32,8 +52,9 @@ def fetch_weather_json():
 def health():
     return jsonify({"status": "ok", "time": datetime.datetime.now().isoformat()})
 
-@app.route("/api/stations/current")
-def stations_current():
+@app.route("/api/external/jcdecaux/current")
+def external_stations_current():
+    
     raw = fetch_bikes_json()
 
     cleaned = []
@@ -54,8 +75,9 @@ def stations_current():
         "stations": cleaned
     })
 
-@app.route("/api/weather/current")
-def weather_current():
+@app.route("/api/external/weather/current")
+def external_weather_current():
+    
     w = fetch_weather_json()
 
     cleaned = {
@@ -80,17 +102,66 @@ def weather_current():
         "weather": cleaned
     })
 
-@app.route("/api/stations/<int:station_id>/history")
-def station_history(station_id: int):
-    hours = request.args.get("hours", default=24, type=int)
-
-    return jsonify({
-        "station_id": station_id,
-        "hours": hours,
-        "rows": [],
-        "note": "stub: DB query not implemented yet"
-    })
 
 
+@app.get("/api/stations")
+def api_stations():
+    sql = """
+        SELECT number, name, address, lat, lng, bike_stands, banking
+        FROM real_stations
+        ORDER BY number;
+    """
+    db = get_db()
+    with db.cursor() as cur:
+        cur.execute(sql)
+        return jsonify(cur.fetchall())
+
+
+@app.get("/api/stations/current")
+def api_stations_current():
+    sql = """
+        SELECT a.number,
+               a.available_bikes,
+               a.available_bike_stands,
+               a.last_update,
+               a.status
+        FROM availability a
+        JOIN (
+            SELECT number, MAX(last_update) AS last_update
+            FROM availability
+            GROUP BY number
+        ) latest
+        ON a.number = latest.number AND a.last_update = latest.last_update
+        ORDER BY a.number;
+    """
+    db = get_db()
+    with db.cursor() as cur:
+        cur.execute(sql)
+        return jsonify(cur.fetchall())
+
+
+@app.get("/api/stations/<int:station_id>/history")
+def api_station_history(station_id: int):
+    hours = request.args.get("hours", default=48, type=int)
+
+    sql = """
+        SELECT number,
+               available_bikes,
+               available_bike_stands,
+               last_update
+        FROM availability
+        WHERE number = %s
+          AND last_update >= (
+                SELECT MAX(last_update)
+                FROM availability
+                WHERE number = %s
+              ) - INTERVAL %s HOUR
+        ORDER BY last_update ASC;
+    """
+
+    db = get_db()
+    with db.cursor() as cur:
+        cur.execute(sql, (station_id, station_id, hours))
+        return jsonify(cur.fetchall())
 if __name__ == "__main__":
     app.run(debug=True)
