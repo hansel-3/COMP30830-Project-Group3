@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 import os
 import pymysql
 from flask import g
@@ -163,5 +163,25 @@ def api_station_history(station_id: int):
     with db.cursor() as cur:
         cur.execute(sql, (station_id, station_id, hours))
         return jsonify(cur.fetchall())
+    
+@app.route("/")
+def main():
+    return render_template("index.html", apikey="AIzaSyA-0piAbx0AlafzuLIPZTfDT00ETq5-N18")
+
+@app.route("/stations")
+def get_stations():
+    db = get_db()
+
+    with db.cursor() as cursor:
+        cursor.execute("SELECT * FROM real_stations;")
+        rows = cursor.fetchall()
+
+    stations = []
+    for row in rows:
+        stations.append(dict(row))
+
+    return jsonify(stations)
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=True)
