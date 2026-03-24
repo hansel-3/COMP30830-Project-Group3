@@ -173,7 +173,7 @@ def get_stations():
     db = get_db()
 
     with db.cursor() as cursor:
-        cursor.execute("SELECT * FROM real_stations;")
+        cursor.execute("SELECT * FROM station;")
         rows = cursor.fetchall()
 
     stations = []
