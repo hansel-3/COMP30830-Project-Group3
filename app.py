@@ -166,21 +166,38 @@ def api_station_history(station_id: int):
     
 @app.route("/")
 def main():
-    return render_template("index.html", apikey="AIzaSyA-0piAbx0AlafzuLIPZTfDT00ETq5-N18")
+    return render_template("index.html", apikey="AIzaSyA-0piAbx0AlafzuLIPZTfDT00ETq5-N18", title = "Home Page")
 
-@app.route("/stations")
-def get_stations():
+
+@app.route("/available/<int:station_id>")
+def get_availability(station_id):
     db = get_db()
 
+    hours = request.args.get("hours", default=48, type=int)
+
+    sql = """
+        SELECT 
+            a.available_bikes,
+            a.number,
+            a.available_bike_stands,
+            a.last_update
+        FROM availability a
+        WHERE a.number = %s
+        AND  last_update >= (
+            SELECT MAX(last_update)
+            FROM availability
+            WHERE number = %s) - INTERVAL %s HOUR
+        ORDER BY last_update ASC; 
+        """ # check if datetime/timestamp
+
     with db.cursor() as cursor:
-        cursor.execute("SELECT * FROM station;")
+        cursor.execute(sql, (station_id,station_id, hours))
         rows = cursor.fetchall()
 
-    stations = []
     for row in rows:
-        stations.append(dict(row))
+        row["last_update"] = row["last_update"].isoformat()
 
-    return jsonify(stations)
+    return jsonify(rows)
 
 
 if __name__ == "__main__":

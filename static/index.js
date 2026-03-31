@@ -1,5 +1,5 @@
+var my_map;
 
-var map;
 function initMap() {
   console.log("initMap function called.")
 
@@ -25,16 +25,16 @@ function initMap() {
   }
 
   const marker = new google.maps.Marker({
-    position: dublin,
-    map: my_map,
+  position: dublin,
+  map: my_map,
   })
 
   getStations();
 }
 
 function getStations() {
-  fetch("/stations")
-  .then(( response)=> {
+  fetch("/api/stations")
+  .then((response)=> {
     return response.json()})
     .then((data) => {
       console.log("fetch response", typeof data
@@ -42,25 +42,85 @@ function getStations() {
       addMarkers(data);
     })
     .catch((error) => {
-      console.error("Error fetching stations", error);
+      console.error("Error fetching stations: ", error);
     });
   }
 
-  function addMarkers(stations){
-    console.log(stations);
-    for (const station of stations){
-      var marker = new google.maps.Marker({
-        position: {
-          lat: stations.position_lat,
-          lng: stations.position_lng,
-        },
-        map: map,
-        title: station.name,
-        station_number: station.number,
+google.charts.load("current", { packages: ["corechart"]});
 
-      })
-    }
+function addMarkers(stations){
+  console.log(stations);
+
+  for (const station of stations){
+    var marker = new google.maps.Marker({
+      position: {
+        lat: station.lat, //*** check if stations.position_lat/lng ***
+        lng: station.lng,
+      },
+      map: my_map,
+      title: station.name,
+      station_number: station.number,
+    });
+
+    const infoWindow = new google.maps.InfoWindow();
+
+    marker.addListener("click", ()=> {
+      const content = `
+      <div>
+      <h3>${station.name}</h3>
+      <p><strong>Address:</strong>${station.address || "N/A"}</p>
+      <p><strong>Available Bike Stands:</strong>${station.bike_stands || "N/A"}</p>
+      <div id="chart_div_${station.number}" style="width: 300px; height: 200px;"></div>
+     </div>
+     `
+     infoWindow.setContent(content);
+     infoWindow.open(my_map, marker);
+
+     fetch(`/available/${station.number}`)
+     .then((response) => response.json())
+     .then((data) => {
+      google.charts.setOnLoadCallback(() => drawChart(data, station.number));
+    }).catch((error) => {
+      console.error(`Error fetching data for station ${station.number}:`, error);
+    });
+  });
+  }}
+
+function drawChart(data, stationID){
+  const chartData = new google.visualization.DataTable();
+
+  chartData.addColumn("datetime", "Time");
+  chartData.addColumn("number", "Available Bikes");
+  chartData.addColumn("number", "Free Stands");
+
+  data.forEach((entry) => {
+    chartData.addRow([
+      new Date(entry.last_update),
+      entry.available_bikes,
+      entry.available_bike_stands,
+    ]);
+  });
+
+  const options = {
+    title: `Available Bikes at Station ${stationID}`,
+    hAxis: {
+      title: "Time",
+      format: "HH:mm",
+    },
+    vAxis: {
+      title: "Available Bikes",
+    },
+    curveType: "function",
+    legend: { position: "bottom" },
+    width: 400,
+    height: 250,
+    };
+
+    const chart = new google.visualization.LineChart(
+      document.getElementById(`chart_div_${stationID}`)
+    );
+
+    chart.draw(chartData, options);
   }
 
-
-window.initMap = initMap
+  window.initMap = initMap;
