@@ -76,7 +76,7 @@ function addMarkers(stations){
      infoWindow.setContent(content);
      infoWindow.open(my_map, marker);
 
-     fetch(`/available/${station.number}`)
+     fetch(`/api/stations/${station.number}/history`)
      .then((response) => response.json())
      .then((data) => {
       google.charts.setOnLoadCallback(() => drawChart(data, station.number));
