@@ -1,0 +1,295 @@
+html, body{
+  height: 100%;
+}
+
+#header{
+  background-color: rgb(32, 32, 32);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 90px;
+}
+
+#middle{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 20px;
+}
+
+#page_title{
+  font-size: 2.5rem;
+  font-weight: 500;
+  color: white;
+  margin-right: auto;
+  margin-left: 20px;
+  font-style: italic;
+}
+
+#temp, #weather_desc {
+color: white;
+}
+
+#icon {
+  width: 50px;
+  border-style: none;
+  border-radius: 20px;
+}
+
+#weather_btn, #station_btn {
+  background-color: transparent;
+  color: white;
+  border-style: none;
+  margin-right: 20px;
+}
+
+#weather_btn:hover, #station_btn:hover {
+  text-decoration: underline;
+}
+
+#map_container{
+  position: relative;
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+}
+
+.banner{
+  background-color: grey;
+  height: 1px;
+  margin: 5px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+/*STATION LIST*/
+
+#station_list {
+  display: none;
+  flex-direction: column;
+  width: 400px;
+  height: 100%;
+  position: absolute;
+  background-color: white;
+  top: 0;
+  right: 0;
+  overflow-y: auto;
+  box-shadow: -5px 0 10px rgba(0,0,0,0.2);
+}
+
+.station {
+  background-color: rgb(230, 230, 230);
+  padding: 10px;
+  margin-bottom: 5px;
+  border-width: 1px;
+  transition: 1s;
+}
+
+.station:hover {
+  opacity: 0.7;
+}
+
+
+/* POPUP DIV */
+
+.bike_summary {
+  display: flex;
+  justify-content: space-around;
+  
+}
+
+#station_name{
+  color: rgb(26, 78, 26);
+  font-weight: bold;
+  margin-top: 0;
+}
+
+.infw_status {
+  font-weight: bold;
+  color: green;
+}
+
+.count{
+  font-size: 1.2rem;
+  color: rgb(26, 78, 26);
+  font-weight: bold;
+}
+
+.more_info_btn{
+  background-color: white;
+  color: rgb(112, 112, 252);
+  border-style: none;
+}
+
+.more_info_btn:hover{
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.exit {
+  position: absolute;
+  top: 20;
+  font-size: 2rem;
+  color: aqua;
+  z-index: 99999;
+}
+
+
+/* MORE INFORMATION SECTION - BIKES */
+
+#more_info_bikes {
+  position: absolute;
+  top: 0;
+  right: 0;      
+  height: 100%;
+  width: 400px;
+  background-color:white;
+  display: none;
+  z-index: 9999; 
+  overflow-y: auto;
+  box-shadow: -5px 0 10px rgba(0,0,0,0.2);
+}
+
+#bike_img_div {
+  width: 100%;
+  position: relative;
+  display: inline-block;
+}
+
+#bike_img {
+  width: 100%;
+  height: 30vh;
+  display: block;
+}
+
+#summary{
+  padding-top: 20px;
+
+  padding-bottom: 60px;
+}
+
+.title{
+  margin-top: 40px;
+  text-align: center;
+  text-decoration: underline;
+}
+
+.address{
+  color: grey;
+  font-size: smaller;
+  margin: 0;
+  line-height: 0;
+  text-align: center;
+}
+
+.status{
+  color: green;
+  margin: 30px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.availability{
+  margin: 2px;
+  text-align: center;
+}
+
+#bike_chart{
+  max-width: 500px;
+  overflow-x: auto;
+}
+
+#chart_title{
+  margin: 0;
+  margin-left: 20px;
+}
+
+/* MORE INFORMATION SECTION - WEATHER */
+
+#more_info_weather {
+  position:absolute;
+  top: 0;
+  right: 0;      
+  height: 100%;
+  width: 400px;
+  background-image: url(/static/images/background.jpeg);
+  display: none;
+  z-index: 9999; 
+  overflow-y: auto;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: -5px 0 10px rgba(0,0,0,0.2);
+}
+
+#weather_main {
+  position: relative;
+  height: 35%;
+  width: 100%;
+}
+
+#show_time, #show_place, #show_temp, #show_desc {
+  color: wheat;
+  position: absolute;
+  font-weight: bold
+}
+
+#show_place{
+  top: 8.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+}
+
+#show_time {
+  top: 8.5%;
+  right: 8.5%;
+}
+
+#show_temp {
+  top: 20%;
+  left:50%;
+  transform: translateX(-50%);
+  font-size: 3rem;
+}
+
+#show_desc {
+  top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+
+#extra_weather_info{
+  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+  gap: 5px;
+  justify-content: center;
+}
+
+.extra{
+  background-color: rgba(0, 0, 0, 0.263);
+  width: 40%;
+  padding: 10px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  color: white;
+}
+
+#scroll {
+  margin-top: 40px;
+  overflow-x: auto;
+}
+
+
+
