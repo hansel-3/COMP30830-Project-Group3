@@ -196,12 +196,8 @@ def api_station_history(station_id: int):
         return jsonify(cur.fetchall())
     
 
-@app.route("/")
-def home():
-    return render_template("signup.html")
 
-
-@app.route("/signup", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def signup():
 
     try_again = None
