@@ -1,20 +1,23 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template, g, redirect, session
 import os
 import pymysql
-from flask import g
 import datetime
 import requests
 import dbinfo
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = "secret key"
 
 def get_db():
     if "db" not in g:
         g.db = pymysql.connect(
             host=os.getenv("DB_HOST", "127.0.0.1"),
-            user=os.getenv("DB_USER", "bikeapp"),
+            user=os.getenv("DB_USER", "root"),
             password=os.getenv("DB_PASSWORD"),
-            database=os.getenv("DB_NAME", "local_databasejcdecaux"),
+            database=os.getenv("DB_NAME", "local_sep_db"),
             cursorclass=pymysql.cursors.DictCursor,
             autocommit=True,
         )
@@ -70,6 +73,9 @@ def external_stations_current():
             "status": s["status"]
         })
 
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"})
+
     return jsonify({
         "scrape_time": datetime.datetime.now().isoformat(),
         "stations": cleaned
@@ -97,28 +103,65 @@ def external_weather_current():
         "weather_desc": (w.get("weather") or [{}])[0].get("description"),
     }
 
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"})
+
     return jsonify({
         "scrape_time": datetime.datetime.now().isoformat(),
         "weather": cleaned
     })
 
+@app.route("/api/weather/history")
+def weather_history():
 
-
-@app.get("/api/stations")
-def api_stations():
     sql = """
-        SELECT number, name, address, lat, lng, bike_stands, banking
-        FROM real_stations
-        ORDER BY number;
-    """
+            SELECT avg(temp) as temp,
+                   avg(humidity) as humidity,
+                   avg(wind_speed) as wind_speed,
+                   DATE_FORMAT(scrape_time, '%Y-%m-%d') AS day_block
+            FROM weather
+            GROUP BY day_block;
+        """
+    
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"})
+    
     db = get_db()
     with db.cursor() as cur:
         cur.execute(sql)
         return jsonify(cur.fetchall())
 
 
-@app.get("/api/stations/current")
-def api_stations_current():
+
+
+@app.get("/api/stations")
+def api_stations():
+    sql = """
+        SELECT s.number, s.name, s.address, s.lat, s.lng, s.bike_stands, s.banking, a.status, a.available_bikes, a.available_bike_stands
+        FROM real_stations s
+        JOIN (
+            SELECT number, MAX(last_update) AS last_update
+            FROM availability
+            GROUP BY number
+            ) latest
+        ON s.number = latest.number
+        JOIN availability a
+        ON s.number = a.number
+        AND a.last_update = latest.last_update
+        ORDER BY s.number;
+    """
+
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"})
+    
+    db = get_db()
+    with db.cursor() as cur:
+        cur.execute(sql)
+        return jsonify(cur.fetchall())
+
+
+@app.get("/api/stations/<int:station_id>/current")
+def api_stations_current(station_id: int):
     sql = """
         SELECT a.number,
                a.available_bikes,
@@ -132,11 +175,15 @@ def api_stations_current():
             GROUP BY number
         ) latest
         ON a.number = latest.number AND a.last_update = latest.last_update
+        WHERE a.number = %s
         ORDER BY a.number;
     """
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"})
+    
     db = get_db()
     with db.cursor() as cur:
-        cur.execute(sql)
+        cur.execute(sql, (station_id,))
         return jsonify(cur.fetchall())
 
 
@@ -145,23 +192,123 @@ def api_station_history(station_id: int):
     hours = request.args.get("hours", default=48, type=int)
 
     sql = """
-        SELECT number,
-               available_bikes,
-               available_bike_stands,
-               last_update
+        SELECT avg(available_bikes) AS available_bikes,
+               avg(available_bike_stands) AS available_bike_stands,
+               DATE_FORMAT(last_update, '%%Y-%%m-%%d %%H:00:00') AS hour_block,
+               number
         FROM availability
         WHERE number = %s
-          AND last_update >= (
-                SELECT MAX(last_update)
-                FROM availability
-                WHERE number = %s
-              ) - INTERVAL %s HOUR
-        ORDER BY last_update ASC;
+        AND last_update >= (
+                        SELECT MAX(last_update)
+                        FROM availability
+                        WHERE number = %s
+                        ) - INTERVAL %s HOUR
+        GROUP BY hour_block
+        ORDER BY hour_block;
+
     """
+
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"})
 
     db = get_db()
     with db.cursor() as cur:
-        cur.execute(sql, (station_id, station_id, hours))
+        cur.execute(sql, (station_id, station_id, hours,))
         return jsonify(cur.fetchall())
+    
+
+
+@app.route("/", methods=["GET", "POST"])
+def signup():
+
+    user_taken = None
+    pw_short = None
+    
+
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"].strip()
+
+        sql1 = """
+                SELECT * FROM users WHERE username = %s;
+            """
+        
+        sql2 = """
+                INSERT INTO users (username, password)
+                VALUES (%s, %s);
+            """
+
+        db = get_db()
+        with db.cursor() as cur:
+            cur.execute(sql1, (username,))
+            existing = cur.fetchone()
+
+            if existing:
+                user_taken = "Username already taken, please try again."
+                return render_template("signup.html", user_taken=user_taken)
+            
+            elif len(password) < 8:
+                pw_short = "Password must be at least 8 characters."
+                return render_template("signup.html", pw_short=pw_short)
+
+            else:
+                hash_pw = generate_password_hash(password)
+                cur.execute(sql2, (username, hash_pw,))
+                return redirect("/login")
+            
+    return render_template("signup.html")
+
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    
+    wrong_cred = None
+    wrong_pw = None
+
+    if request.method =="POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        sql = """
+                SELECT * FROM users WHERE username = %s;
+            """
+        
+        db = get_db()
+        with db.cursor() as cur:
+            cur.execute(sql, (username,))
+            user = cur.fetchone()
+
+        if user and check_password_hash(user["password"], password):
+            session["user_id"] = user["username"]
+            return redirect("/home")
+        
+        elif user:
+            wrong_pw = "The password you've entered is incorrect."
+            return render_template("login.html", wrong_pw=wrong_pw, username=username)
+        
+        else:
+            wrong_cred = "The login information you've entered is incorrect"
+            return render_template("login.html", wrong_cred=wrong_cred)
+        
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
+
+
+@app.route("/home")
+def main():
+
+    if "user_id" not in session:
+        return redirect("/") 
+    
+    return render_template("index.html", apikey="AIzaSyA-0piAbx0AlafzuLIPZTfDT00ETq5-N18", title = "Home Page")
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=True)
+
+
