@@ -20,6 +20,7 @@
       </div>
       <button id="station_btn">View Stations</button>
       <button id="weather_btn">View Weather</button>
+      <button id="logout">Log out</button>
     </div>
 
     <div id="map_container">
@@ -28,32 +29,40 @@
       
       <div id="more_info_bikes">
         <div id="summary"></div>
-        <div id="scroll"><div>
-          <h4 id="chart_title">Average Bike Availability over the last 48Hrs</h4>
+        <div class="scroll_bikes">
+          <h4 class="chart_title">Average Bike Availability over the last 48Hrs</h4>
           <div id="bike_chart1"></div>
-        </div>
-        <div>
-          <h4 id="chart_title">Average Bike Stand Availability over the last 48Hrs</h4>
+          <h4 class="chart_title">Average Bike Stand Availability over the last 48Hrs</h4>
           <div id="bike_chart2"></div>
-        </div>
         </div>
       </div>
 
       <div id="more_info_weather">
         <div id="weather_main">
-          <p id="show_place"></p>
           <p id="show_time"></p>
+          <p id="show_place"></p>
           <p id="show_temp"></p>
           <p id="show_desc"></p>
         </div>
         <div id="extra_weather_info">
-          <div class="extra">Weather Description <br> <span id="weather_d"></span></div>
-          <div class="extra">Feels Like <br> <span id="feels_like"></span></div>
-          <div class="extra">Humidity <br> <span id="humidity"></span></div>
-          <div class="extra">Pressure <br> <span id="pressure"></span></div>
-          <div class="extra">Wind Direction <br> <span id="wind_deg"></span></div>
-          <div class="extra">Wind Speed <br> <span id="wind_speed"></span></div>
+          <div class="extra"><span class="extra_title">Weather Description</span><span id="weather_d"></span></div>
+          <div class="extra"><span class="extra_title">Feels Like</span><span id="feels_like"></span></div>
+          <div class="extra"><span class="extra_title">Humidity</span><span id="humidity"></span></div>
+          <div class="extra"><span class="extra_title">Pressure</span><span id="pressure"></span></div>
+          <div class="extra"><span class="extra_title">Wind Direction</span><span id="wind_deg"></span></div>
+          <div class="extra"><span class="extra_title">Wind Speed</span><span id="wind_speed"></span></div>
         </div>
+         <div>
+          <div id="scroll_weather">
+            <h4 class="chart_title_w"> Average temperature over the last 4 days</h4>
+          <div id="weather_chart1"></div>
+          <h4 class="chart_title_w"> Average humidity over the last 4 days</h4>
+          <div id="weather_chart2"></div>
+          <h4 class="chart_title_w"> Average wind speed over the last 4 days</h4>
+          <div id="weather_chart3"></div>
+          </div>
+        </div>
+       
       </div>
 
       <div id="station_list"></div>

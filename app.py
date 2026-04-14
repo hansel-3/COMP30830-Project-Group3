@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, g, redirect, session, flash
+from flask import Flask, jsonify, request, render_template, g, redirect, session
 import os
 import pymysql
 import datetime
@@ -111,6 +111,27 @@ def external_weather_current():
         "weather": cleaned
     })
 
+@app.route("/api/weather/history")
+def weather_history():
+
+    sql = """
+            SELECT avg(temp) as temp,
+                   avg(humidity) as humidity,
+                   avg(wind_speed) as wind_speed,
+                   DATE_FORMAT(scrape_time, '%Y-%m-%d') AS day_block
+            FROM weather
+            GROUP BY day_block;
+        """
+    
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"})
+    
+    db = get_db()
+    with db.cursor() as cur:
+        cur.execute(sql)
+        return jsonify(cur.fetchall())
+
+
 
 
 @app.get("/api/stations")
@@ -200,11 +221,13 @@ def api_station_history(station_id: int):
 @app.route("/", methods=["GET", "POST"])
 def signup():
 
-    try_again = None
+    user_taken = None
+    pw_short = None
+    
 
     if request.method == "POST":
         username = request.form["username"]
-        password = request.form["password"]
+        password = request.form["password"].strip()
 
         sql1 = """
                 SELECT * FROM users WHERE username = %s;
@@ -221,15 +244,19 @@ def signup():
             existing = cur.fetchone()
 
             if existing:
-                try_again = "Username already taken, please try again."
-                return render_template("signup.html", try_again=try_again)
+                user_taken = "Username already taken, please try again."
+                return render_template("signup.html", user_taken=user_taken)
+            
+            elif len(password) < 8:
+                pw_short = "Password must be at least 8 characters."
+                return render_template("signup.html", pw_short=pw_short)
 
             else:
                 hash_pw = generate_password_hash(password)
                 cur.execute(sql2, (username, hash_pw,))
                 return redirect("/login")
             
-    return render_template("signup.html", try_again=try_again)
+    return render_template("signup.html")
 
 
 
@@ -254,7 +281,7 @@ def login():
 
         if user and check_password_hash(user["password"], password):
             session["user_id"] = user["username"]
-            return redirect("/main")
+            return redirect("/home")
         
         elif user:
             wrong_pw = "The password you've entered is incorrect."
@@ -266,8 +293,13 @@ def login():
         
     return render_template("login.html")
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
 
-@app.route("/main")
+
+@app.route("/home")
 def main():
 
     if "user_id" not in session:

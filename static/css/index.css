@@ -40,35 +40,28 @@ color: white;
   border-radius: 20px;
 }
 
-#weather_btn, #station_btn {
+#weather_btn, #station_btn, #logout {
   background-color: transparent;
   color: white;
   border-style: none;
   margin-right: 20px;
 }
 
-#weather_btn:hover, #station_btn:hover {
+#weather_btn:hover, #station_btn:hover, #logout:hover {
+  cursor: pointer;
   text-decoration: underline;
 }
 
 #map_container{
   position: relative;
-  height: 100%;
+  height: calc(100% - 90px);
 }
 
 #map {
   height: 100%;
 }
 
-.banner{
-  background-color: grey;
-  height: 1px;
-  margin: 5px;
-  margin-top: 40px;
-  margin-bottom: 20px;
-}
-
-/*STATION LIST*/
+/* BIKE STATION LIST */
 
 #station_list {
   display: none;
@@ -84,19 +77,23 @@ color: white;
 }
 
 .station {
-  background-color: rgb(230, 230, 230);
-  padding: 10px;
-  margin-bottom: 5px;
+  background-color: white;
+  padding: 25px;
+  border-style:none;
+  border-bottom: solid;
+  border-bottom-color: rgba(128, 128, 128, 0.289);
   border-width: 1px;
-  transition: 1s;
+  
 }
 
 .station:hover {
+  cursor: pointer;
   opacity: 0.7;
+  background-color: lightgray;
 }
 
 
-/* POPUP DIV */
+/* INFOWINDOW POPUP DIV */
 
 .bike_summary {
   display: flex;
@@ -105,7 +102,6 @@ color: white;
 }
 
 #station_name{
-  color: rgb(26, 78, 26);
   font-weight: bold;
   margin-top: 0;
 }
@@ -117,7 +113,6 @@ color: white;
 
 .count{
   font-size: 1.2rem;
-  color: rgb(26, 78, 26);
   font-weight: bold;
 }
 
@@ -156,28 +151,25 @@ color: white;
   box-shadow: -5px 0 10px rgba(0,0,0,0.2);
 }
 
-#bike_img_div {
-  width: 100%;
-  position: relative;
-  display: inline-block;
-}
-
-#bike_img {
-  width: 100%;
-  height: 30vh;
-  display: block;
-}
 
 #summary{
-  padding-top: 20px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.289);
+}
 
-  padding-bottom: 60px;
+.summary_info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 30px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.289);
 }
 
 .title{
-  margin-top: 40px;
-  text-align: center;
   text-decoration: underline;
+  width: 80%;
+  text-align: center;
 }
 
 .address{
@@ -185,88 +177,79 @@ color: white;
   font-size: smaller;
   margin: 0;
   line-height: 0;
-  text-align: center;
 }
 
 .status{
   color: green;
   margin: 30px;
   font-weight: bold;
-  text-align: center;
 }
 
 .availability{
   margin: 2px;
-  text-align: center;
 }
 
-#bike_chart{
-  max-width: 500px;
-  overflow-x: auto;
-}
-
-#chart_title{
+.chart_title{
   margin: 0;
   margin-left: 20px;
+  padding-top: 30px;
 }
 
 /* MORE INFORMATION SECTION - WEATHER */
 
 #more_info_weather {
-  position:absolute;
+  position: absolute;
   top: 0;
   right: 0;      
   height: 100%;
   width: 400px;
-  background-image: url(/static/images/background.jpeg);
+  background-color: rgba(240, 248, 255, 0.769);
   display: none;
   z-index: 9999; 
   overflow-y: auto;
   flex-direction: column;
-  align-items: center;
   box-shadow: -5px 0 10px rgba(0,0,0,0.2);
 }
 
 #weather_main {
-  position: relative;
-  height: 35%;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-image: url(/static/images/background2.jpeg);
+  border-radius: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 60px;
+
 }
 
 #show_time, #show_place, #show_temp, #show_desc {
-  color: wheat;
-  position: absolute;
-  font-weight: bold
-}
-
-#show_place{
-  top: 8.5%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 2rem;
+  
+  margin: 20px;
+  color: white;
 }
 
 #show_time {
-  top: 8.5%;
-  right: 8.5%;
+  margin-left: auto;
+  margin-right: 20px;
+}
+
+#show_place{
+  font-size: 2rem;
 }
 
 #show_temp {
-  top: 20%;
-  left:50%;
-  transform: translateX(-50%);
   font-size: 3rem;
 }
 
 #show_desc {
-  top: 60%;
-  left: 50%;
-  transform: translateX(-50%);
+  margin: 0;
 }
 
 
 #extra_weather_info{
-  margin-top: 5px;
   display: flex;
   flex-wrap: wrap;
   max-width: 100%;
@@ -275,7 +258,7 @@ color: white;
 }
 
 .extra{
-  background-color: rgba(0, 0, 0, 0.263);
+  background-color: wheat;
   width: 40%;
   padding: 10px;
   border-radius: 20px;
@@ -283,12 +266,35 @@ color: white;
   flex-direction: column;
   align-items: center;
   gap: 7px;
-  color: white;
+  
 }
 
-#scroll {
-  margin-top: 40px;
+.extra_title {
+  color: rgb(240, 172, 45);
+}
+
+.scroll_bikes {
+  margin-top: 10px;
   overflow-x: auto;
+  overflow-y: hidden;
+}
+
+#scroll_weather{
+  overflow-y: hidden;
+  background-image: url(/static/images/background2.jpeg);
+  border-radius: 20px;
+  margin: 10px;
+}
+
+#weather_chart1, #weather_chart2, #weather_chart3 {
+  background-color: white;
+  border-radius: 20px;
+  margin: 10px;
+}
+
+.chart_title_w{
+  color: white;
+  text-align: center;
 }
 
 

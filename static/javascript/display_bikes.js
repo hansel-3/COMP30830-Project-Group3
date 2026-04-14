@@ -9,7 +9,7 @@ try {
 }
 
 // STATION LIST DISPLAY
-export function displayStationList(stations){
+export function displayStationList(dyn, stat){
 
   const list = document.getElementById("station_list");
   list.innerHTML = "";
@@ -18,34 +18,35 @@ export function displayStationList(stations){
   document.getElementById("more_info_weather").style.display = "none";
   document.getElementById("more_info_bikes").style.display = "none";
 
-  stations.forEach(entry => {
+  dyn.forEach(entry => {
   let element = document.createElement("button");
   element.className = "station";
   let content = `
-  <div>${entry.name}(${entry.station_id})</div>
+  <div>s${entry.station_id}: ${entry.name}</div>
   <div>${entry.available_bikes}<i class="fa-solid fa-bicycle"></i>   ${entry.available_stands}<i class="fa-solid fa-square-parking"></i></div>
   `
   element.innerHTML = content;
   document.getElementById("station_list").appendChild(element);
+
+  const test = stat.find(s => s.number === entry.station_id)
+  element.onclick = ()=> displayDetailedBikes(entry, test)
 })
 }
 
 
 // DETAILED BIKE INFORMATION DISPLAY
-export function displayDetailedBikes(station){
+export function displayDetailedBikes(dynamic, station){
 
   document.getElementById("more_info_bikes").style.display = "block";
   document.getElementById("station_list").style.display = "none";
   document.getElementById("more_info_weather").style.display = "none";
 
-  fetch("/api/external/jcdecaux/current")
-  .then((response) => response.json())
-  .then((data) => {
-    let dynamic = data.stations.find(s => s.station_id === station.number || station.name === station.number)
+  document.getElementById("bike_chart1").innerHTML = "";
+  document.getElementById("bike_chart2").innerHTML = "";
 
-    displayMoreInfo(dynamic, station)
+  displayMoreInfo(dynamic, station)
 
-    fetch(`/api/stations/${station.number || station.station_id}/history`)
+    fetch(`/api/stations/${station.number}/history`)
     .then((response) => response.json())
     .then((history) => {
        let bikes_array = [];
@@ -58,8 +59,8 @@ export function displayDetailedBikes(station){
         drawChart("Bikes Available", history, bikes_array, "bike_chart1")
         drawChart("Free Stands", history, stands_array, "bike_chart2" )
     })
-  })
-})}
+  }).catch((error) => console.log("failed to fetch bike history data.", error))
+}
 
 
 // BIKE INFORMATION FOR INFOWINDOW POPUP
@@ -78,23 +79,24 @@ export function displayCurrentBike(data) {
     </div>`
 }
 
-
+// BIKE INFORMATION IN SIDE PANEL
 function displayMoreInfo(dynamic, stat){
 
   document.getElementById("more_info_bikes").style.display = "block";
-
+  
   document.getElementById("summary").innerHTML = `
-  <div>
+  <div class="summary_info">
   <h3 class="title">Station ${stat.number}: ${stat.name}</h3>
   <p class="address">${stat.address}</p>
   <p class="status">${dynamic.status}</p>
   <p class="availability"> ${stat.bike_stands} Total Bike Stands</p>
   <p class="availability">${dynamic.available_bikes} Available Bikes <i class="fa-solid fa-bicycle"></i></p>
   <p class="availability">${dynamic.available_stands} Free Stands <i class="fa-solid fa-square-parking"></i></p>
-  <div class="banner"></div>
   </div>
-  </div>
+  <div id="pie"></div>
   `;
+
+  drawPie(dynamic.available_bikes, dynamic.available_stands);
 }
 
 
@@ -113,7 +115,7 @@ function drawChart(axis_title, data, availability, div){
     chartData.addRow([
       dateFixed,
       Number(availability[i]),
-      'fill-color: #46bd50; fill-opacity: 0.7'
+      'fill-color: #3450d0; fill-opacity: 0.8'
     ]);
     i++
   });
@@ -123,6 +125,7 @@ function drawChart(axis_title, data, availability, div){
     hAxis: {
       title: "Time (Hour of Day)",
       format: "H",
+      gridlines: {color:"transparent"}
     },
     vAxis: {
       title: axis_title,
@@ -132,16 +135,37 @@ function drawChart(axis_title, data, availability, div){
     },
     legend: { position: "none" },
     height: 400,
-    width: 800,
     chartArea: {
       top: 20,
       bottom:100,
+      width: 300
     }
     };
 
 
     const chart = new google.visualization.ColumnChart(
       document.getElementById(div)
-    )
+    );
     chart.draw(chartData, options);
+  }
+
+function drawPie(bikes, stands){
+  const pieData = new google.visualization.arrayToDataTable([
+    ["type","count"],
+    ["available bikes", bikes],
+    ["available stands", stands]
+  ]);
+  
+  let options ={
+    title: "Bike Availability",
+    legend: {position: "bottom"},
+    colors: ["#6080d6","#d98b50"],
+    width:450,
+    height:450
+  };
+
+  let chart = new google.visualization.PieChart(
+    document.getElementById("pie")
+  );
+  chart.draw(pieData, options);
   }

@@ -18,7 +18,7 @@ function initMap() {
     
     try {
         my_map = new google.maps.Map(mapElement, {
-            zoom: 15,
+            zoom: 14.3,
             center: dublin,
             styles: [
   {
@@ -79,6 +79,14 @@ const waitForGoogleMaps = setInterval(() => {
 
 // DISPLAY CURRENT WEATHER INFORMATION IN THE HEADER
 displayCurrentWeather()
+
+
+// ADD FUNCTIONALITY TO LOGOUT BUTTON
+document.getElementById("logout").addEventListener("click", async () => {
+  await fetch("/logout", { method: "GET" });
+  window.location.href = "/login";
+})
+
 
 // MAKE MAP FUNCTION GLOBAL
 window.initMap = initMap;

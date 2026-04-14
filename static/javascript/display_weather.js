@@ -20,7 +20,7 @@ export function displayCurrentWeather(){
       icon_code = "04d";
     } else if (desc.includes("shower rain")){
       icon_code = "09d";
-    } else if (desc.includes("rain" || "drizzle")){
+    } else if (desc.includes("rain") || desc.includes("drizzle")){
       icon_code = "10d";
     } else if (desc.includes("thunderstorm")){
       icon_code = "11d";
@@ -36,22 +36,41 @@ export function displayCurrentWeather(){
     document.getElementById("weather_desc").innerHTML = data.weather.weather_desc
   })
   .catch((error) => console.log("Failed to fetch weather data", error))
-
 }
 
 
 // ADD FUNCTIONALITY TO "VIEW WEATHER" BUTTON - DISPLAY MORE DETAILED INFORMATION
 document.getElementById("weather_btn").addEventListener("click", ()=> {
+
   document.getElementById("more_info_bikes").style.display = "none";
   document.getElementById("station_list").style.display = "none";
   document.getElementById("more_info_weather").style.display = "flex";
+
+fetch("/api/weather/history")
+.then((response) => response.json())
+.then((data) => {
+  
+  const temp = [];
+  data.forEach((entry) => temp.push(entry.temp));
+
+  const humidity = [];
+  data.forEach((entry) => humidity.push(entry.humidity));
+
+  const w_speed = [];
+  data.forEach((entry) => w_speed.push(entry.wind_speed));
+
+  drawWeatherChart("Temperature (\u00B0C)", data, temp, "weather_chart1");
+  drawWeatherChart("Humidity (%)", data, humidity, "weather_chart2");
+  drawWeatherChart("Wind Speed (m/s)", data, w_speed, "weather_chart3");
+})
+
 })
 
 // GET CURRENT TIME
 const now = new Date();
 const hours = now.getHours();
 const minutes = now.getMinutes();
-document.getElementById("show_time").innerHTML = hours + ":" + minutes.toString().padStart(2, "0");
+document.getElementById("show_time").innerHTML = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0");
 
 
 // GET CURRENT TEMPERATURE & WEATHER DESCRIPTION 
@@ -59,7 +78,7 @@ fetch("/api/external/weather/current")
 .then((response) => response.json())
 .then((data) => {
   
-  document.getElementById("show_place").innerHTML = data.weather.location_name;
+  document.getElementById("show_place").innerHTML = `<i class="fa-solid fa-location-arrow"></i> ` + data.weather.location_name;
   document.getElementById("show_temp").innerHTML = data.weather.temp.toFixed(1) + "&degC";
   document.getElementById("show_desc").innerHTML = data.weather.weather_desc;
   
@@ -77,4 +96,47 @@ fetch("/api/external/weather/current")
   document.getElementById("wind_deg").innerHTML = data.weather.wind_deg + "&deg";
   document.getElementById("wind_speed").innerHTML = data.weather.wind_speed + " m/s";
 }).catch((error) => console.log("Failed to fetch weather data", error));
+
+
+function drawWeatherChart(feature, data, values, div){ 
+  const chartData = new google.visualization.DataTable();
+
+  chartData.addColumn("date", "Day")
+  chartData.addColumn("number", feature)
+
+  let i =0;
+  data.forEach(entry => {
+    let dateFixed = new Date(entry.day_block.replace(" ", "T"));
+    chartData.addRow([
+      dateFixed,
+      Number(values[i]), 
+    ])
+    i++
+  });
+
+  const option = {
+    hAxis: {
+      title: "Day",
+      format: "MMM d",
+      gridlines: {color:"transparent"}
+    },
+    vAxis: {
+      title: feature,
+      gridlines: {color:"transparent"},
+      minValue: 0
+    },
+    height:400,
+    legend: {position:"none"},
+    backgroundColor: "transparent",
+    curveType: "function",
+    colors: ["#F5DEB3"]
+   
+  };
+
+  const chart = new google.visualization.LineChart(
+    document.getElementById(div)
+  )
+
+  chart.draw(chartData, option)
+}
 

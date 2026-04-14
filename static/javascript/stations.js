@@ -5,7 +5,14 @@ import { my_map } from "./index.js";
 document.getElementById("station_btn").addEventListener("click", ()=>{
   fetch("/api/external/jcdecaux/current")
   .then((response) => response.json())
-  .then((data) => displayStationList(data.stations))
+  .then((dynamic_info) => {
+
+    fetch("/api/stations")
+    .then((response) => response.json())
+    .then((static_info) => {
+      displayStationList(dynamic_info.stations, static_info)
+    } )
+  })
   .catch((error) => console.log("Error fetching current bike data.", error))
 })
 
@@ -46,7 +53,7 @@ function addMarkers(stations){
 
     // ADD FUNCTIONALITY TO MARKERS - OPEN DETAILED BIKE INFORMATION
     marker.addListener("click", () => {
-      fetch("/api/external/jcdecaux/current")
+    fetch("/api/external/jcdecaux/current")
     .then((response) => response.json())
     .then((data) => {
 
@@ -64,18 +71,20 @@ function addMarkers(stations){
 
       document.getElementById("more_info_bikes").style.display = "none";
 
-      const index = data.stations.findIndex(item => item.station_id === station.number);
-      google.charts.setOnLoadCallback(() => displayCurrentBike(data.stations[index]));
+      const dynamic_data = data.stations.find(s => s.station_id === station.number);
 
-      document.querySelector(".more_info_btn").addEventListener("click", () => {
-        displayDetailedBikes(station);
-      });
+      google.charts.setOnLoadCallback(() => displayCurrentBike(dynamic_data))
 
-      
+      infoWindow.addListener("domready", () => {
+        const btn = document.querySelector(".more_info_btn")
+
+        if(btn) {
+            btn.onclick = () => displayDetailedBikes(dynamic_data, station)
+        }
+      })
     }).catch((error) => {
       console.error("Error fetching current data", error);
     });
     })
-  
   }}
 
