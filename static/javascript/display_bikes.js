@@ -22,7 +22,7 @@ export function displayStationList(dyn, stat){
   let element = document.createElement("button");
   element.className = "station";
   let content = `
-  <div>s${entry.station_id}: ${entry.name}</div>
+  <div>s${entry.station_id}: ${entry.name}</div> <br>
   <div>${entry.available_bikes}<i class="fa-solid fa-bicycle"></i>   ${entry.available_stands}<i class="fa-solid fa-square-parking"></i></div>
   `
   element.innerHTML = content;

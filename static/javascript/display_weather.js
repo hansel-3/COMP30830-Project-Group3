@@ -129,7 +129,7 @@ function drawWeatherChart(feature, data, values, div){
     legend: {position:"none"},
     backgroundColor: "transparent",
     curveType: "function",
-    colors: ["#F5DEB3"]
+    colors: ["#f4d294"]
    
   };
 
