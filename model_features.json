@@ -10,9 +10,9 @@
     "month"
   ],
   "target": "num_bikes_available",
-  "best_model": "Random Forest",
-  "mae": 0.966,
-  "r2": 0.9652,
+  "best_model": "DecisionTreeRegressor",
+  "mae": 1.013,
+  "r2": 0.9287,
   "all_results": {
     "Linear Regression": {
       "MAE": 8.136,
@@ -34,5 +34,6 @@
       "MAE": 6.79,
       "R2": 0.2853
     }
-  }
+  },
+  "note": "Deployment model: DecisionTreeRegressor (MAE=1.013, R2=0.929, ~13MB). Random Forest (MAE=0.966, R2=0.965, ~933MB) was more accurate but not deployable on EC2 \u2014 reported in notebook/report for comparison only."
 }
