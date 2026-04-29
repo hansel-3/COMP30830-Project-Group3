@@ -2,63 +2,47 @@
 <html>
   <head>
     <title>Login Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css' )}}">
-    <script type="module" src="{{ url_for('static', filename='javascript/form.js' )}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css' )}}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
   </head>
   <body>
-
-
-    <div id="page_container">
-          <div id="left">
-      <img id="left_img" src="static/images/dublin_bikes3.jpeg">
+    
+    <div id="left">
+      <h1 id="left_txt">Dublin Bike Share</h1>
     </div>
-    <div id="divider"></div>
+  
     <div id="right">
-      <img id="logo" src="static/images/logo.png" alt="logo of bike">
-    <h1>Welcome!</h1>
+      <h1>Login</h1>
 
-    {% if wrong_cred%}
-    <p class="warning">&#10071; {{wrong_cred}}</p>
-    {% endif %}
+      {% if wrong_cred%}
+      <p class="warning">&#10071; {{wrong_cred}}</p>
+      {% endif %}
 
-    {% if wrong_pw%}
-    <p class="warning">&#10071; {{wrong_pw}}</p>
-    {% endif %}
-
-
-    <div>
-      <form action="/login" method="POST">
-        <div class="form_input"><label>Username</label><input id="user" type="text" name="username" value="{{ username }}" placeholder="Your Username" required></div>
-        <div class="form_input"><label>Password</label><input id="password" type="password" name="password" placeholder="Your Password" required></div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
-
-    <div id="redirect">
-      <p>Don't have an account?</p>
-      <a href="{{ url_for('signup')}}">Sign Up</a>
-    </div>
-
-    </div>
-
+      {% if wrong_pw%}
+      <p class="warning">&#10071; {{wrong_pw}}</p>
+      {% endif %}
+      <div>
+        <form action="/login" method="POST">
+          <div class="form_input"><label for="user">Username</label><input id="user" type="text" name="username" value="{{ username }}" placeholder="Your Username" required></div>
+          <div class="form_input"><label for="password">Password</label><input id="password" type="password" name="password" placeholder="Your Password" required></div>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+      
+      <div id="redirect">
+        <p>Don't have an account? <a href="{{ url_for('signup')}}">Sign Up</a></p>
+      </div>
     </div>
     
-
     <script>
-      if ("{{ wrong_pw }}"){
-        document.querySelector("input[name='password']").style.borderColor = "red";
-        document.querySelector("input[name='password']").addEventListener
-      }
-
-      if ("{{ wrong_cred }}"){
-        document.querySelector("input[name='username']").style.borderColor = "red";
-        document.querySelector("input[name='password']").style.borderColor = "red";
-      }
+      window.FLASK_DATA = {
+        wrong_pw: "{{ wrong_pw }}",
+        wrong_cred: "{{ wrong_cred }}"
+      };
     </script>
 
+    <script type="module" src="{{ url_for('static', filename='javascript/forms.js')}}"></script>
+
   </body>
-
-
 </html>

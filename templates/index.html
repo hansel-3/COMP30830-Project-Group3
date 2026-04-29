@@ -11,33 +11,41 @@
   </head>
   <body>
 
-    <div id="header">
+    <div id="banner">
       <h1 id="page_title">Dublin Bike Share</h1>
-      <div id="middle">
+      <div id="banner_weather">
         <p id="temp"></p>
         <img id="icon" alt="Weather Icon">
         <p id="weather_desc"></p>
       </div>
       <button id="station_btn">View Stations</button>
       <button id="weather_btn">View Weather</button>
-      <button id="logout">Log out</button>
+      <button id="logout_btn">Log out</button>
     </div>
 
     <div id="map_container">
+
+      <div id="show_availability">Show Availability</div>
       
       <div id="map"></div>
       
-      <div id="more_info_bikes">
-        <div id="summary"></div>
+      <div id="bike_info_container">
+        <div class="sp_head"><span class="cancel_btn">&#x2715;</span> STATION INFORMATION BOARD </div>
+        <div class="summary"></div>
+        <div id="pie_chart_container">
+          <h4 id="pie_chart_title">Availability Breakdown</h4>
+          <div id="pie_chart"></div>
+        </div>
         <div class="scroll_bikes">
-          <h4 class="chart_title">Average Bike Availability over the last 48Hrs</h4>
+          <h4 class="chart_title">Average Bike Availability over the last 36Hrs</h4>
           <div id="bike_chart1"></div>
-          <h4 class="chart_title">Average Bike Stand Availability over the last 48Hrs</h4>
+          <h4 class="chart_title">Average Parking Space Availability over the last 36Hrs</h4>
           <div id="bike_chart2"></div>
         </div>
       </div>
 
-      <div id="more_info_weather">
+      <div id="weather_info_container">
+        <div class="sp_head"><span class="cancel_btn">&#x2715;</span> WEATHER REPORT</div>
         <div id="weather_main">
           <p id="show_time"></p>
           <p id="show_place"></p>
@@ -45,42 +53,62 @@
           <p id="show_desc"></p>
         </div>
         <div id="extra_weather_info">
-          <div class="extra"><span class="extra_title">Weather Description</span><span id="weather_d"></span></div>
-          <div class="extra"><span class="extra_title">Feels Like</span><span id="feels_like"></span></div>
-          <div class="extra"><span class="extra_title">Humidity</span><span id="humidity"></span></div>
-          <div class="extra"><span class="extra_title">Pressure</span><span id="pressure"></span></div>
-          <div class="extra"><span class="extra_title">Wind Direction</span><span id="wind_deg"></span></div>
-          <div class="extra"><span class="extra_title">Wind Speed</span><span id="wind_speed"></span></div>
+          <div class="extra"><span class="extra_title"><i class="fa-solid fa-comment"></i> Weather Description</span><span id="weather_d"></span></div>
+          <div class="extra"><span class="extra_title"><i class="fa-solid fa-temperature-full"></i> Feels Like</span><span id="feels_like"></span></div>
+          <div class="extra"><span class="extra_title"> <i class="fa-solid fa-droplet"></i>Humidity</span><span id="humidity"></span></div>
+          <div class="extra"><span class="extra_title"><i class="fa-solid fa-gauge"></i> Pressure</span><span id="pressure"></span></div>
+          <div class="extra"><span class="extra_title"><i class="fa-solid fa-compass"></i> Wind Direction</span><span id="wind_deg"></span></div>
+          <div class="extra"><span class="extra_title"><i class="fa-solid fa-wind"></i> Wind Speed</span><span id="wind_speed"></span></div>
         </div>
-         <div>
+        <div>
           <div id="scroll_weather">
-            <h4 class="chart_title_w"> Average temperature over the last 4 days</h4>
+            <h4 class="chart_title_w"> Average temperature over the last 6 days</h4>
           <div id="weather_chart1"></div>
-          <h4 class="chart_title_w"> Average humidity over the last 4 days</h4>
+          <h4 class="chart_title_w"> Average humidity over the last 6 days</h4>
           <div id="weather_chart2"></div>
-          <h4 class="chart_title_w"> Average wind speed over the last 4 days</h4>
+          <h4 class="chart_title_w"> Average wind speed over the last 6 days</h4>
           <div id="weather_chart3"></div>
           </div>
         </div>
-       
       </div>
-
-      <div id="station_list"></div>
+      
+      <div id="station_list_container">
+        <div id="search_bar_container">
+          <div id="search_bar">
+          <div id="cancel_stns_btn">&#x2715;</div>
+          <input type="text" id="search_input" placeholder="Station name/number">
+        </div>
+        </div>
+        <div id="station_list"></div>
+      </div>
+      
+      <div id="prediction_container">
+        <div class="sp_head"><span class="previous_btn"><i class="fa-solid fa-arrow-left"></i></span> 5-DAY BIKE FORECAST</div>
+        <div id="pdct_form_container">
+          <h3 class="pdct_div_title title"></h3>
+          <p id="pdct_div_add" class="address"></p>
+          <form id="prediction_form">
+            <div class="input_field input_field_top">
+              <label for="date">Select date</label>
+              <input type="date" id="date" class="predict_input" required>
+              <p class="message">*between <span id="base"></span> and <span class="limit"></span>.</p>
+            </div>
+            <div class="input_field">
+              <label for="time">Select time</label>
+              <input type="time" id="time" class="predict_input" required>
+              <p class="message"> *between <span id="valid_time_base"></span> today and <span id="valid_time_limit"></span> on <span class="limit"></span>.</p>
+            </div>
+            <p id="error"></p>
+            <button type="submit" class="dark_btn">Show Prediction</button>
+          </form>
+        </div>
+        <div id="prediction_result_div"></div>
+      </div>
     </div>
 
-    
-
-
     <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-0piAbx0AlafzuLIPZTfDT00ETq5-N18&v=weekly"
-    async
-    defer
-    loading="lazy">
+    src="https://maps.googleapis.com/maps/api/js?key={{ apikey }}&v=weekly" async defer>
     </script>
-  
-    
-
 
   </body>
-  
 </html>
