@@ -2,62 +2,41 @@
 <html>
   <head>
     <title>Register Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css' )}}">
-    <script type="module" src="{{ url_for('static', filename='javascript/form.js' )}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css' )}}">
+    <script type="module" src="{{ url_for('static', filename='javascript/forms.js' )}}"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
   </head>
   <body>
-
-  <div id="page_container">
-     <div id="left">
-      <img id="left_img" src="static/images/dublin_bikes3.jpeg">
+    <div id="left">
+      <h1 id="left_txt">Dublin Bike Share</h1>
     </div>
-    <div id="divider"></div>
+
     <div id="right">
-      <img id="logo" src="static/images/logo.png" alt="logo of bike">
-    <h1>Sign up for Dublin Bike Share</h1>
+      
+      <h1>Sign up</h1>
 
-    {% if user_taken %}
-    <p class="warning">&#10071; {{ user_taken }}</p>
-    {% endif %}
+      {% if user_taken %}
+      <p class="warning">&#10071; {{ user_taken }}</p>
+      {% endif %}
 
-    {% if pw_short %}
-    <p class="warning">&#10071; {{ pw_short }}</p>
-    {% endif %}
+      {% if pw_short %}
+      <p class="warning">&#10071; {{ pw_short }}</p>
+      {% endif %}
 
-    <p class="warning" style="display: none;"></p>
+      <p class="warning" style="display: none;"></p>
 
-    <div id="form_container">
-      <form action="/" method="POST">
-        <div class="form_input"><label>Username</label><input type="text" name="username" placeholder="Your username" required></div>
-        <div class="form_input"><label>Password</label><input type="password" name="password" placeholder="Your password" required></div>
-        <button type="submit">Next</button>
-      </form>
+      <div id="form_container">
+        <form action="/" method="POST">
+          <div class="form_input"><label for="user">Username</label><input type="text" id="user" name="username" placeholder="Your Username" required></div>
+          <div class="form_input"><label for="password">Password</label><input type="password" id="password" name="password" placeholder="Your Password" required></div>
+          <button type="submit">Next</button>
+        </form>
+      </div>
+      <div id="redirect">
+        <p>Already have an account? <a href="{{ url_for('login')}}">Login</a></p>
+      </div>
     </div>
-    <div id="redirect">
-      <p>Already have an account?</p>
-      <a href="{{ url_for('login')}}">Login</a>
-    </div>
-    </div>
-  </div>
 
-  <script>
-  
-  const form = document.querySelector("form");
-  const passwordInput = document.querySelector('input[name="password"]');
-
-  form.addEventListener("submit", (e) => {
-    if (passwordInput.value.length < 8) {
-      e.preventDefault();
-      document.querySelector(".warning").style.display = "block"
-      document.querySelector(".warning").innerHTML = "&#10071; Password must be at least 8 characters."
-    }
-  });
-
-
-  </script>
   </body>
-
-
 </html>

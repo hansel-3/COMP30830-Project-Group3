@@ -1,94 +1,75 @@
-import { getStations } from "./stations.js";
+import { getStations } from "./display_stations.js";
 import { displayCurrentWeather } from "./display_weather.js";
+import { toggle } from "./icon_design.js";
 
-//INITIATE THE MAP 
-export var my_map;
-function initMap() {
-    console.log("initMap function called.")
+// wait for google maps script to finish loading
+const waitForGoogleMaps = setInterval(() => { 
+  if (window.google && google.maps) { 
+    clearInterval(waitForGoogleMaps); 
+    initMap(); 
+  } }, 50);
 
-    const dublin = {lat: 53.3498, lng: -6.2603}
-    console.log("Dublin coordinates set")
+// initiate map
+export let my_map;
+function initMap () {
+
+    const dublin = {lat: 53.3498, lng: -6.2603};
 
     const mapElement = document.getElementById("map");
     if (!mapElement){
         console.error("Element with ID 'map' not found in the DOM");
         return;
     }
-    console.log("Map element found")
+    console.log("Map element found");
     
     try {
         my_map = new google.maps.Map(mapElement, {
             zoom: 14.3,
             center: dublin,
-            styles: [
-  {
-    "featureType": "poi",
-    "elementType": "labels.text",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.business",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  }
-]
-        });
+            mapId: "b5f0c4195ff6ddeee8837853",
+          });
         console.log("Map instance created successfully");
+
     } catch (error){
         console.error("Error when creating map instance", error);
         return;
     }
-    
     getStations();
+    displayCurrentWeather();
+}  
+
+// show availability button
+document.getElementById("show_availability").addEventListener("click", () =>{
+  toggle();
+});
+
+// cancel out of side panels
+const list = document.querySelectorAll(".cancel_btn");
+list.forEach(entry => {
+  entry.addEventListener("click", () => {
+    document.getElementById("weather_info_container").style.display = "none";
+    document.getElementById("bike_info_container").style.display = "none";
+    document.getElementById("station_list_container").style.display = "none";
+})
+})
+
+document.getElementById("cancel_stns_btn").onclick = () => {
+  document.getElementById("station_list_container").style.display = "none";
 }
 
+document.querySelector(".previous_btn").addEventListener("click", ()=> {
+  document.getElementById("prediction_container").style.display = "none";
+  document.getElementById("bike_info_container").style.display = "block";
 
+})
 
-
-const waitForGoogleMaps = setInterval(() => {
-    if (window.google && google.maps) {
-        clearInterval(waitForGoogleMaps);
-        initMap();
-    }
-}, 50);  
-
-
-// DISPLAY CURRENT WEATHER INFORMATION IN THE HEADER
-displayCurrentWeather()
-
-
-// ADD FUNCTIONALITY TO LOGOUT BUTTON
-document.getElementById("logout").addEventListener("click", async () => {
+// add functionality to logout button
+document.getElementById("logout_btn").addEventListener("click", async () => {
   await fetch("/logout", { method: "GET" });
   window.location.href = "/login";
 })
 
-
-// MAKE MAP FUNCTION GLOBAL
+// make map function call global
 window.initMap = initMap;
 
 

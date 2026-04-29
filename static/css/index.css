@@ -1,8 +1,9 @@
 html, body{
   height: 100%;
+  overflow-y: hidden;
 }
-
-#header{
+/* top banner */
+#banner{
   background-color: rgb(32, 32, 32);
   margin: 0;
   display: flex;
@@ -11,14 +12,14 @@ html, body{
   height: 90px;
 }
 
-#middle{
+#banner_weather{
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  gap: 20px;
+  gap: 10px;
 }
 
 #page_title{
@@ -37,43 +38,124 @@ color: white;
 #icon {
   width: 50px;
   border-style: none;
-  border-radius: 20px;
 }
 
-#weather_btn, #station_btn, #logout {
+#weather_btn, #station_btn, #logout_btn {
   background-color: transparent;
   color: white;
   border-style: none;
   margin-right: 20px;
 }
 
-#weather_btn:hover, #station_btn:hover, #logout:hover {
+#weather_btn:hover, #station_btn:hover, #logout_btn:hover {
   cursor: pointer;
   text-decoration: underline;
 }
 
+/* map container */
 #map_container{
   position: relative;
-  height: calc(100% - 90px);
+  height: calc(98% - 90px);
 }
 
 #map {
   height: 100%;
 }
 
-/* BIKE STATION LIST */
-
-#station_list {
-  display: none;
-  flex-direction: column;
-  width: 400px;
-  height: 100%;
+#show_availability{
   position: absolute;
+  z-index: 9999;
+  top: 1.5%;
+  left: 15%;
+  display: inline-block;
+  background-color: white;
+  padding: 10.5px;
+  box-shadow: 5px 0 10px rgba(0,0,0,0.2);
+  font-family:Arial, sans-serif;
+}
+#show_availability:hover{
+  cursor: pointer;
+  background-color: rgb(220, 218, 218);
+}
+
+/* marker design */
+.marker_icon{
+  width: 30px;
+  height: 30px;
+  background-image: url("/static/images/icon.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  border-style: solid;
+  border-radius: 40px;
+  border-width: 3px;
+  border-color: rgb(151, 98, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: transparent;
+}
+
+.marker_icon.show_bikes{
+  width: 30px;
+  height: 30px;
+  background-color: rgb(244, 162, 115);
+  background-image: none;
+  border: 3px solid rgb(151, 98, 0);
+  border-radius: 50%;
+  color: black;
+  font-weight: bold;
+}
+
+/* bike station list */
+#station_list_container{
+  position: absolute;
+  display: none;
+  height: 100%;
+  width: 400px;
   background-color: white;
   top: 0;
   right: 0;
-  overflow-y: auto;
   box-shadow: -5px 0 10px rgba(0,0,0,0.2);
+}
+
+#station_list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 90%;
+}
+
+#search_bar_container{
+  background-color: white;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#search_bar{
+  display: flex;
+  align-items: center;
+  border: 1px solid lightgray;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  border-radius: 30px;
+  width: 85%;
+}
+
+#cancel_stns_btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius:50%;
+  width: 40px;
+  height: 40px;
+  transition: 0.5s;
+}
+
+#search_bar input{
+  border-style: none;
+  text-align: left;
 }
 
 .station {
@@ -83,7 +165,7 @@ color: white;
   border-bottom: solid;
   border-bottom-color: rgba(128, 128, 128, 0.289);
   border-width: 1px;
-  
+  text-align: left;
 }
 
 .station:hover {
@@ -92,16 +174,19 @@ color: white;
   background-color: lightgray;
 }
 
-
-/* INFOWINDOW POPUP DIV */
+/* infoWindow popup */
+.infw_div{
+  width: 200px;
+  height: 110px;
+}
 
 .bike_summary {
   display: flex;
-  justify-content: space-around;
-  
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-#station_name{
+.infw_title{
   font-weight: bold;
   margin-top: 0;
 }
@@ -109,36 +194,27 @@ color: white;
 .infw_status {
   font-weight: bold;
   color: green;
+  margin-right: auto;
 }
 
-.count{
-  font-size: 1.2rem;
+.infw_count{
   font-weight: bold;
 }
 
 .more_info_btn{
   background-color: white;
-  color: rgb(112, 112, 252);
+  color: blue;
   border-style: none;
+  padding-left: 0;
 }
 
-.more_info_btn:hover{
+.more_info_btn:hover {
   text-decoration: underline;
   cursor: pointer;
 }
 
-.exit {
-  position: absolute;
-  top: 20;
-  font-size: 2rem;
-  color: aqua;
-  z-index: 99999;
-}
-
-
-/* MORE INFORMATION SECTION - BIKES */
-
-#more_info_bikes {
+/* more information section - bikes */
+#bike_info_container {
   position: absolute;
   top: 0;
   right: 0;      
@@ -151,9 +227,8 @@ color: white;
   box-shadow: -5px 0 10px rgba(0,0,0,0.2);
 }
 
-
-#summary{
-  padding-top: 30px;
+.summary{
+  padding-top: 15px;
   padding-bottom: 30px;
   border-bottom: 1px solid rgba(128, 128, 128, 0.289);
 }
@@ -162,12 +237,9 @@ color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 30px;
-  border-bottom: 1px solid rgba(128, 128, 128, 0.289);
 }
 
 .title{
-  text-decoration: underline;
   width: 80%;
   text-align: center;
 }
@@ -181,12 +253,42 @@ color: white;
 
 .status{
   color: green;
-  margin: 30px;
+  margin: 20px;
   font-weight: bold;
 }
 
-.availability{
+.bike_details{
   margin: 2px;
+}
+
+.open_predict_btn{
+  background-color: rgb(32, 32, 32);
+  color: white;
+  border-radius: 20px;
+  padding: 10px;
+  margin-top: 20px;
+}
+.open_predict_btn:hover{
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+#pie_chart_container{
+  border-bottom: 1px solid rgba(128, 128, 128, 0.289);
+  padding-bottom: 10px;
+}
+
+#pie_chart_title{
+  text-align: center;
+  margin-bottom: 0;
+  margin-top: 0;
+  padding-top: 30px;
+}
+
+.scroll_bikes {
+  margin-top: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .chart_title{
@@ -195,38 +297,42 @@ color: white;
   padding-top: 30px;
 }
 
-/* MORE INFORMATION SECTION - WEATHER */
-
-#more_info_weather {
+/* more information section - weather */
+#weather_info_container {
   position: absolute;
   top: 0;
   right: 0;      
   height: 100%;
   width: 400px;
-  background-color: rgba(240, 248, 255, 0.769);
+  background-color: rgba(255, 255, 255, 0.871);
   display: none;
   z-index: 9999; 
-  overflow-y: auto;
   flex-direction: column;
   box-shadow: -5px 0 10px rgba(0,0,0,0.2);
+  overflow-y: auto;
+}
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(92, 92, 92);
+  border-radius: 10px;
 }
 
 #weather_main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-image: url(/static/images/background2.jpeg);
+  background-image: url(/static/images/weather_background.jpeg);
   border-radius: 20px;
   margin-left: 10px;
   margin-right: 10px;
-  margin-top: 10px;
+  margin-top: 0;
   margin-bottom: 10px;
   padding-bottom: 60px;
-
 }
 
 #show_time, #show_place, #show_temp, #show_desc {
-  
   margin: 20px;
   color: white;
 }
@@ -248,7 +354,6 @@ color: white;
   margin: 0;
 }
 
-
 #extra_weather_info{
   display: flex;
   flex-wrap: wrap;
@@ -266,22 +371,15 @@ color: white;
   flex-direction: column;
   align-items: center;
   gap: 7px;
-  
 }
 
 .extra_title {
-  color: rgb(240, 172, 45);
-}
-
-.scroll_bikes {
-  margin-top: 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  color: rgb(240, 159, 8);
 }
 
 #scroll_weather{
   overflow-y: hidden;
-  background-image: url(/static/images/background2.jpeg);
+  background-image: url(/static/images/weather_background.jpeg);
   border-radius: 20px;
   margin: 10px;
 }
@@ -296,6 +394,158 @@ color: white;
   color: white;
   text-align: center;
 }
+
+/* prediction div */
+#prediction_container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 400px;
+  box-shadow: -5px 0 10px rgba(0,0,0,0.2);
+  background-color: white;
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#pdct_form_container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 58%;
+}
+
+form{
+  position: relative;;
+  width: 100%;
+  height: 100%;
+}
+
+#prediction_result_div {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 45px;
+  gap: 10px;
+}
+
+#prediction_result_div p{
+  margin: 0;
+}
+
+.prediction_result{
+  font-weight: bold;
+  font-size: 3rem;
+  text-align: center;
+  margin: 0;
+}
+
+.prediction_result_text{
+  width: 80%;
+  text-align: center;
+}
+
+.input_field {
+  display: flex;
+  flex-direction: column;
+  margin: 30px;
+}
+
+input {
+ border-radius: 30px;
+ height: 40px;
+ width: 100%;
+ text-align: center;
+ border-style: solid;
+ border-color:lightgray;
+ border-width: 1px;
+}
+
+input:hover{
+  border-color: grey;
+}
+
+.input_field_top {
+  margin-top: 40px;
+}
+
+.dark_btn{
+  position: absolute;
+  z-index: 9999;
+  display: inline-block;
+  background-color: rgb(32, 32, 32);
+  color: white;
+  border-radius: 20px;
+  padding: 10px;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.dark_btn:hover{
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.message, #error{
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+#error{
+  color: red;
+  margin-left: 30px;
+}
+
+/* side panel header */
+.sp_head{
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  padding: 15px;
+  background-color: white;
+  text-align: center;
+  box-shadow: -5px 0 10px rgba(0,0,0,0.8);
+}
+
+.cancel_btn, .previous_btn{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  margin-left: 10px;
+  border-radius:80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius:50%;
+  width: 40px;
+  height: 40px;
+  transition: 0.5s;
+}
+
+.cancel_btn:hover, .previous_btn:hover, #cancel_stns_btn:hover{
+  cursor: pointer;;
+  background-color: rgb(236, 234, 234);
+}
+
+.cancel_stn_lstt{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 5%;
+  z-index: 999;
+}
+
+#search_input{
+  position: relative;
+}
+
+input:focus {
+  outline: none;
+}
+
 
 
 
