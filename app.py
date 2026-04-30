@@ -211,7 +211,7 @@ def api_station_history(station_id: int):
     
 
 # ── Load model and feature list once at startup ───────────────────
-with open("bike_availability_model.pkl", "rb") as f:
+with open("models/bike_availability_model.pkl", "rb") as f:
     model = pickle.load(f)
 
 with open("model_features.json") as f:
