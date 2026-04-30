@@ -211,7 +211,6 @@ dbinfo_local.py
 dbinfo_local*.py
 *.jsonl
 data/
-stations_static.json
 weather_timeseries.jsonl
 bikes_timeseries.jsonl
 .DS_Store
