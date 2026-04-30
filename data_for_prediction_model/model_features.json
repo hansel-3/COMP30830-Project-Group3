@@ -1,0 +1,39 @@
+{
+  "features": [
+    "station_id",
+    "temperature",
+    "humidity",
+    "pressure",
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "month"
+  ],
+  "target": "num_bikes_available",
+  "best_model": "DecisionTreeRegressor",
+  "mae": 1.013,
+  "r2": 0.9287,
+  "all_results": {
+    "Linear Regression": {
+      "MAE": 8.136,
+      "R2": -0.0
+    },
+    "Ridge Regression": {
+      "MAE": 8.136,
+      "R2": -0.0
+    },
+    "Decision Tree": {
+      "MAE": 5.922,
+      "R2": 0.3853
+    },
+    "Random Forest": {
+      "MAE": 0.966,
+      "R2": 0.9652
+    },
+    "Gradient Boosting": {
+      "MAE": 6.79,
+      "R2": 0.2853
+    }
+  },
+  "note": "Deployment model: DecisionTreeRegressor (MAE=1.013, R2=0.929, ~13MB). Random Forest (MAE=0.966, R2=0.965, ~933MB) was more accurate but not deployable on EC2 \u2014 reported in notebook/report for comparison only."
+}

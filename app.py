@@ -1,20 +1,19 @@
 from flask import Flask, jsonify, request, render_template, g, redirect, session
 import os
 import pymysql
-import datetime
-from datetime import timedelta
+from datetime import timedelta, datetime
 import requests
-import dbinfo
+from database import dbinfo
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import pickle
-import numpy as np
 import json
 import pandas as pd
 
 load_dotenv()
 
 app = Flask(__name__)
+
 app.secret_key = "secret key"
 
 def get_db():
@@ -60,7 +59,7 @@ def fetch_weather_json():
 
 @app.route("/health")
 def health():
-    return jsonify({"status": "ok", "time": datetime.datetime.now().isoformat()})
+    return jsonify({"status": "ok", "time": datetime.now().isoformat()})
 
 @app.route("/api/external/jcdecaux/current")
 def external_stations_current():
@@ -84,7 +83,7 @@ def external_stations_current():
         return jsonify({"error": "Unauthorized"})
 
     return jsonify({
-        "scrape_time": datetime.datetime.now().isoformat(),
+        "scrape_time": datetime.now().isoformat(),
         "stations": cleaned
     })
 
@@ -114,7 +113,7 @@ def external_weather_current():
         return jsonify({"error": "Unauthorized"})
 
     return jsonify({
-        "scrape_time": datetime.datetime.now().isoformat(),
+        "scrape_time": datetime.now().isoformat(),
         "weather": cleaned
     })
 
@@ -209,12 +208,11 @@ def api_station_history(station_id: int):
         cur.execute(sql, (station_id, station_id, hours,))
         return jsonify(cur.fetchall())
     
-
 # ── Load model and feature list once at startup ───────────────────
-with open("models/bike_availability_model.pkl", "rb") as f:
+with open("data_for_prediction_model/bike_availability_model.pkl", "rb") as f:
     model = pickle.load(f)
 
-with open("model_features.json") as f:
+with open("data_for_prediction_model/model_features.json") as f:
     FEATURES = json.load(f)["features"]
 
 def fetch_openweather_forecast(date):
@@ -290,13 +288,13 @@ def predict():
             return jsonify({"error": "Invalid station number entry. This station does not exist."}), 400
             
         # 2. Parse date/time → features
-        dt          = datetime.datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
+        dt          = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
         hour        = dt.hour
         day_of_week = dt.weekday()   # 0=Monday … 6=Sunday
         month       = dt.month
         is_weekend  = 1 if day_of_week >= 5 else 0
 
-        base = datetime.datetime.now()
+        base = datetime.now()
 
         if base.minute > 0:
             base = base.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
