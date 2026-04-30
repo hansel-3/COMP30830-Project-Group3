@@ -8,6 +8,7 @@ API_KEY = ""
 CONTRACT = "dublin"
 
 OPENWEATHER_URL = "https://api.openweathermap.org/data/2.5/weather"
+OPENWEATHER_FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast"
 OPENWEATHER_KEY = ""
 LAT = 53.3497
 LON = -6.2603
