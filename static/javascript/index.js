@@ -1,94 +1,56 @@
-import { getStations } from "./stations.js";
-import { displayCurrentWeather } from "./display_weather.js";
+import { getStations } from "./displayStations.js";
+import { displayCurrentWeather } from "./displayWeather.js";
+import { addEventListeners } from "./eventListeners.js";
 
-//INITIATE THE MAP 
-export var my_map;
+// wait for google maps script to finish loading
+const waitForGoogleMaps = setInterval(() => { 
+  if (window.google && google.maps) { 
+    clearInterval(waitForGoogleMaps); 
+    initMap(); 
+  } }, 50);
+
+/**
+   * Initializes Google Map on the website
+   * 
+   * Creates map centred on Dublin
+   * Calls getStations() to fetch for station data
+   * Calls displayCurrentWeather() to show live weather in top banner
+   */
+export let myMap;
+
 function initMap() {
-    console.log("initMap function called.")
+  // set Dublin coordinates
+  const dublin = {lat: 53.3498, lng: -6.2603};
 
-    const dublin = {lat: 53.3498, lng: -6.2603}
-    console.log("Dublin coordinates set")
-
-    const mapElement = document.getElementById("map");
-    if (!mapElement){
-        console.error("Element with ID 'map' not found in the DOM");
-        return;
-    }
-    console.log("Map element found")
-    
-    try {
-        my_map = new google.maps.Map(mapElement, {
-            zoom: 14.3,
-            center: dublin,
-            styles: [
-  {
-    "featureType": "poi",
-    "elementType": "labels.text",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.business",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
+  // find div for map
+  const mapElement = document.getElementById("map");
+  if (!mapElement){
+    console.error("Element with ID 'map' not found in the DOM");
+    return;
   }
-]
-        });
-        console.log("Map instance created successfully");
-    } catch (error){
-        console.error("Error when creating map instance", error);
-        return;
-    }
+  console.log("Map element found");
     
-    getStations();
+  // create map instance
+  try {
+    myMap = new google.maps.Map(mapElement, {
+    zoom: 14.3,
+    center: dublin,
+    mapId: "b5f0c4195ff6ddeee8837853",
+  });
+  console.log("Map instance created successfully");
+} catch (error){
+  console.error("Error when creating map instance", error);
+  return;
 }
+// get stations data
+getStations();
 
+// display live weather in top banner
+displayCurrentWeather();
 
+// add event listeners to buttons in DOM
+addEventListeners();
+} 
 
-
-const waitForGoogleMaps = setInterval(() => {
-    if (window.google && google.maps) {
-        clearInterval(waitForGoogleMaps);
-        initMap();
-    }
-}, 50);  
-
-
-// DISPLAY CURRENT WEATHER INFORMATION IN THE HEADER
-displayCurrentWeather()
-
-
-// ADD FUNCTIONALITY TO LOGOUT BUTTON
-document.getElementById("logout").addEventListener("click", async () => {
-  await fetch("/logout", { method: "GET" });
-  window.location.href = "/login";
-})
-
-
-// MAKE MAP FUNCTION GLOBAL
+// make map function call global
 window.initMap = initMap;
-
-
