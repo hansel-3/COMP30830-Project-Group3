@@ -11,6 +11,7 @@
   </head>
   <body>
 
+    <!--Top Banner-->
     <div id="banner">
       <h1 id="page_title">Dublin Bike Share</h1>
       <div id="banner_weather">
@@ -23,12 +24,14 @@
       <button id="logout_btn">Log out</button>
     </div>
 
+    <!--Map Conatiner-->
     <div id="map_container">
 
       <div id="show_availability">Show Availability</div>
       
       <div id="map"></div>
       
+      <!--Station Inofrmation Board Div-->
       <div id="bike_info_container">
         <div class="sp_head"><span class="cancel_btn">&#x2715;</span> STATION INFORMATION BOARD </div>
         <div class="summary"></div>
@@ -44,6 +47,7 @@
         </div>
       </div>
 
+      <!--Weather Report Div-->
       <div id="weather_info_container">
         <div class="sp_head"><span class="cancel_btn">&#x2715;</span> WEATHER REPORT</div>
         <div id="weather_main">
@@ -72,6 +76,7 @@
         </div>
       </div>
       
+      <!--Stations List Div-->
       <div id="station_list_container">
         <div id="search_bar_container">
           <div id="search_bar">
@@ -82,11 +87,12 @@
         <div id="station_list"></div>
       </div>
       
+      <!--Prediction Div-->
       <div id="prediction_container">
         <div class="sp_head"><span class="previous_btn"><i class="fa-solid fa-arrow-left"></i></span> 5-DAY BIKE FORECAST</div>
         <div id="pdct_form_container">
-          <h3 class="pdct_div_title title"></h3>
-          <p id="pdct_div_add" class="address"></p>
+          <h3 class="prediction_title title"></h3>
+          <p id="prediction_address" class="address"></p>
           <form id="prediction_form">
             <div class="input_field input_field_top">
               <label for="date">Select date</label>
@@ -105,7 +111,6 @@
         <div id="prediction_result_div"></div>
       </div>
     </div>
-
     <script
     src="https://maps.googleapis.com/maps/api/js?key={{ apikey }}&v=weekly" async defer>
     </script>

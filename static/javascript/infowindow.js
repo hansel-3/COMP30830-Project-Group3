@@ -2,7 +2,7 @@ import { my_map } from "./index.js";
 import { displayDetailedBikes} from "./display_bikes.js";
 
 const infoWindow = new google.maps.InfoWindow();
-
+  
 // function to display infoWindow
 export function displayInfw(dyn, station){
 
