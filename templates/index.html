@@ -14,18 +14,20 @@
     <!--Top Banner-->
     <div id="banner">
       <h1 id="page_title">Dublin Bike Share</h1>
-      <div id="middle">
+      <div id="banner_weather">
         <p id="temp"></p>
         <img id="icon" alt="Weather Icon">
         <p id="weather_desc"></p>
       </div>
       <button id="station_btn">View Stations</button>
       <button id="weather_btn">View Weather</button>
-      <button id="logout">Log out</button>
+      <button id="logout_btn">Log out</button>
     </div>
 
     <!--Map Conatiner-->
     <div id="map_container">
+
+      <div id="show_availability">Show Availability</div>
       
       <div id="map"></div>
       
@@ -38,9 +40,9 @@
           <div id="pie_chart"></div>
         </div>
         <div class="scroll_bikes">
-          <h4 class="chart_title">Average Bike Availability over the last 48Hrs</h4>
+          <h4 class="chart_title">Average Bike Availability over the last 36Hrs</h4>
           <div id="bike_chart1"></div>
-          <h4 class="chart_title">Average Bike Stand Availability over the last 48Hrs</h4>
+          <h4 class="chart_title">Average Parking Space Availability over the last 36Hrs</h4>
           <div id="bike_chart2"></div>
         </div>
       </div>
@@ -55,24 +57,23 @@
           <p id="show_desc"></p>
         </div>
         <div id="extra_weather_info">
-          <div class="extra"><span class="extra_title">Weather Description</span><span id="weather_d"></span></div>
-          <div class="extra"><span class="extra_title">Feels Like</span><span id="feels_like"></span></div>
-          <div class="extra"><span class="extra_title">Humidity</span><span id="humidity"></span></div>
-          <div class="extra"><span class="extra_title">Pressure</span><span id="pressure"></span></div>
-          <div class="extra"><span class="extra_title">Wind Direction</span><span id="wind_deg"></span></div>
-          <div class="extra"><span class="extra_title">Wind Speed</span><span id="wind_speed"></span></div>
+          <div class="extra"><span class="extra_title"><i class="fa-solid fa-comment"></i> Weather Description</span><span id="weather_d"></span></div>
+          <div class="extra"><span class="extra_title"><i class="fa-solid fa-temperature-full"></i> Feels Like</span><span id="feels_like"></span></div>
+          <div class="extra"><span class="extra_title"> <i class="fa-solid fa-droplet"></i>Humidity</span><span id="humidity"></span></div>
+          <div class="extra"><span class="extra_title"><i class="fa-solid fa-gauge"></i> Pressure</span><span id="pressure"></span></div>
+          <div class="extra"><span class="extra_title"><i class="fa-solid fa-compass"></i> Wind Direction</span><span id="wind_deg"></span></div>
+          <div class="extra"><span class="extra_title"><i class="fa-solid fa-wind"></i> Wind Speed</span><span id="wind_speed"></span></div>
         </div>
-         <div>
+        <div>
           <div id="scroll_weather">
-            <h4 class="chart_title_w"> Average temperature over the last 4 days</h4>
+            <h4 class="chart_title_w"> Average temperature over the last 6 days</h4>
           <div id="weather_chart1"></div>
-          <h4 class="chart_title_w"> Average humidity over the last 4 days</h4>
+          <h4 class="chart_title_w"> Average humidity over the last 6 days</h4>
           <div id="weather_chart2"></div>
-          <h4 class="chart_title_w"> Average wind speed over the last 4 days</h4>
+          <h4 class="chart_title_w"> Average wind speed over the last 6 days</h4>
           <div id="weather_chart3"></div>
           </div>
         </div>
-       
       </div>
       
       <!--Stations List Div-->
@@ -111,11 +112,8 @@
       </div>
     </div>
     <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-0piAbx0AlafzuLIPZTfDT00ETq5-N18&v=weekly"
-    async
-    defer
-    loading="lazy">
+    src="https://maps.googleapis.com/maps/api/js?key={{ apikey }}&v=weekly" async defer>
     </script>
+
   </body>
-  
 </html>
