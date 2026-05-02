@@ -2,8 +2,9 @@
 /**
  * Toggle the display of markers to show bike availability for each station
  * 
- *    Applies/removes "show bikes" class to all markers
- *    Updates "Show Availability" button text
+ * Applies/removes "show bikes" class to all markers
+ * Updates "Show Availability" button text
+ * @returns {void}
  */
 export function toggleMarkers(){
   // apply toggle property to all markers

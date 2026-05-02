@@ -3,8 +3,9 @@ import { drawWeatherChart } from "./drawCharts.js";
 /**
  * Displays live weather information in top banner of webpage
  * 
- * Fetches current weather information from backend API
+ * Fetches current weather information from Openweather API
  * Displays live information and corresponding weather icon in the banner
+ * @returns {void}
  */
 export function displayCurrentWeather(){
   fetch("/api/external/weather/current")
@@ -12,7 +13,7 @@ export function displayCurrentWeather(){
   .then((data) => {
 
     let iconCode;
-    // find code for relevant weather icon
+    // find weather icon code based on weather description
     const desc = data.weather.weather_desc.toLowerCase();
     if (desc.includes("clear sky")){
       iconCode = "01d";
@@ -39,7 +40,7 @@ export function displayCurrentWeather(){
     document.getElementById("icon").src = url;     // display weather icon in banner
     document.getElementById("weather_desc").innerHTML = data.weather.weather_desc; // display weather description in banner
 
-  }).catch((error) => console.log("Failed to fetch weather data.", error));
+  }).catch((error) => console.log("Failed to fetch weather data: ", error));
 };
 
 /**
@@ -47,9 +48,9 @@ export function displayCurrentWeather(){
  * 
  * Displays live time and weather details
  * Displays historical weather charts (temperature, humidity, wind speed)
- * 
  * @param {Object} current Current weather information (temperature, location, weather description, humidity, pressure, wind)
  * @param {Array<Object>} historic  Historical daily weather information for charts
+ * @returns {void}
  */
 export function displayDetailedWeather(current, historic){
   // open weather side panel 
@@ -94,7 +95,6 @@ export function displayDetailedWeather(current, historic){
      yAxisHumidity.push(Number(entry.humidity));
      yAxisWindSpeed.push(Number(entry.wind_speed));
   })
-
   // draw historic weather charts
   drawWeatherChart(xAxis, yAxisTemp, "Temperature (\u00B0C)", "weather_chart1");
   drawWeatherChart(xAxis, yAxisHumidity, "Humidity (%)", "weather_chart2");

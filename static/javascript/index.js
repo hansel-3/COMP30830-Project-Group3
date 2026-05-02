@@ -1,6 +1,6 @@
 import { getStations } from "./displayStations.js";
 import { displayCurrentWeather } from "./displayWeather.js";
-import { addEventListeners } from "./eventListeners.js";
+import { setupEventListeners } from "./eventListeners.js";
 
 // wait for google maps script to finish loading
 const waitForGoogleMaps = setInterval(() => { 
@@ -42,14 +42,14 @@ function initMap() {
   console.error("Error when creating map instance", error);
   return;
 }
-// get stations data
+// get bike station data
 getStations();
 
 // display live weather in top banner
 displayCurrentWeather();
 
 // add event listeners to buttons in DOM
-addEventListeners();
+setupEventListeners();
 } 
 
 // make map function call global

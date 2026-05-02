@@ -6,6 +6,7 @@
  * @param {Array<number>} yData Historic bike/stands availability data for y-axis
  * @param {string} yTitle Descriptive title for y-axis 
  * @param {string} divID ID of target div HTML element
+ * @returns {void}
  */
 export function drawBikeChart(xData, yData, yTitle, divID){
   // create data table to store values
@@ -60,12 +61,15 @@ export function drawBikeChart(xData, yData, yTitle, divID){
     );
     chart.draw(chartData, options);
   };
+
+
 /**
  * Draws pie chart showing ratio between available bikes and parking spaces
  * 
  * @param {number} bikes Number of avaialable bikes
  * @param {number} stands Number of available parking spaces
  * @param {string} divID ID of target div HTML element
+ * @returns {void}
  */
 export function drawPieChart(bikes, stands, divID){
   // create data table to store values
@@ -100,6 +104,7 @@ export function drawPieChart(bikes, stands, divID){
  * @param {Array<number>} yData Historic temperature/ humidity/ wind speed data for y-axis
  * @param {string} yTitle Descriptive title for y-axis 
  * @param {string} divID ID of target div HTML element
+ * @returns {void}
  */
 export function drawWeatherChart(xData, yData, yTitle, divID){ 
   // create data table to store values

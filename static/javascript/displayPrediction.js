@@ -20,7 +20,7 @@ function changeDateFormat(date) {
    */
 function validDateAndTime(){
   // get current date and date five days ahead
-  let currentDate = new Date();
+  const currentDate = new Date();
   let upperDateLimit = new Date(currentDate);
   upperDateLimit.setDate(upperDateLimit.getDate() + 5);
 
@@ -44,10 +44,10 @@ function validDateAndTime(){
 /**
  * Opens prediction side panel to reveal prediction form
  * 
- *    Displays valid date and time inputs a user may enter
- *    Calls validateSubmission() to ensure requirements are met
- *    
- * @param {Object} station Static information for selected station
+ * Displays valid date and time inputs a user may enter
+ * Calls validateSubmission() to ensure requirements are met
+ * @param {Object} station Static information for selected station (station name, address)
+ * @returns {void}
  */
 export function displayPredictionDetails(station){
   // open prediction side panel
@@ -71,17 +71,15 @@ export function displayPredictionDetails(station){
   document.getElementById("prediction_address").innerHTML = station.address;
 
   // find valid dates and times
-  let dateTimeLimits = validDateAndTime();
+  const dateTimeLimits = validDateAndTime();
 
   // display valid dates to user
   document.getElementById("base").innerHTML = changeDateFormat(dateTimeLimits.currentDate);
   document.querySelectorAll(".limit").forEach(elem => elem.innerHTML = changeDateFormat(dateTimeLimits.upperDateLimit));
 
-   // prefix hours with 0 if single digit
-  let lowerLimitHours = dateTimeLimits.lowerLimit.getHours().toString().padStart(2, "0");
-  let upperLimitHours = dateTimeLimits.upperLimit.getHours().toString().padStart(2, "0");
-
   // show valid times to user
+  const lowerLimitHours = dateTimeLimits.lowerLimit.getHours().toString().padStart(2, "0");
+  const upperLimitHours = dateTimeLimits.upperLimit.getHours().toString().padStart(2, "0");
   document.getElementById("valid_time_base").innerHTML = `${lowerLimitHours}:00`;
   document.getElementById("valid_time_limit").innerHTML = `${upperLimitHours}:00`;
 
@@ -95,6 +93,7 @@ export function displayPredictionDetails(station){
  * 
  * @param {Event} e Form submission event 
  * @param {number} stationNumber Station ID number for selected station 
+ * @returns {void}
  */
 function validateSubmission(e, stationNumber){
   e.preventDefault(); // prevent page refresh on submission
@@ -121,13 +120,13 @@ function validateSubmission(e, stationNumber){
 }
 
 /**
- * Predicts bike availability based on prediction model
+ * Predicts bike availability for selected time and date
  * 
- *    Fetches /predict API endpoint in backend
- * 
- * @param {string} date 
- * @param {string} time 
- * @param {number} stationNumber 
+ * Fetches /predict API endpoint in backend
+ * @param {string} date Date of choice
+ * @param {string} time Time of choice
+ * @param {number} stationNumber Station ID number
+ * @returns {void}
  */
 function predictAvailability(date, time, stationNumber){
   fetch(`/predict?date=${date}&time=${time}&station_id=${stationNumber}`)
@@ -137,7 +136,7 @@ function predictAvailability(date, time, stationNumber){
       // ensure correct grammar for text displayed
       let bikeGrammar;
       let verbGrammar;
-      
+
       if (data.predicted_available_bikes == 1){
         bikeGrammar = "bike";
         verbGrammar = "is";
@@ -146,13 +145,15 @@ function predictAvailability(date, time, stationNumber){
         verbGrammar = "are";
       }
 
-      document.getElementById("prediction_result_div").innerHTML = 
+      // display result to user
+      const div = document.getElementById("prediction_result_div")
+      div.innerHTML = 
       `<p class="prediction_result">${data.predicted_available_bikes}</p>
       <p class="prediction_result_text">${bikeGrammar} ${verbGrammar} predicted to be available for your selected time.</p>
       `;
       document.getElementById("error").style.display = "none";
-      document.getElementById("prediction_result_div").style.display = "flex";
-
+      div.style.display = "flex";
+      
     }).catch((error) => console.log("Something went wrong: ", error));
 };
 

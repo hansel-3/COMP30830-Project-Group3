@@ -2,9 +2,9 @@ import { myMap } from "./index.js";
 import { displayInfoWindow } from "./infoWindow.js";
 
 /**
- * Fetches static station data from backend API
- * 
- *    Calls addMarkers() to add markers to stations upon successful fetching
+ * Fetches static station data from /stations backend API
+ * Calls addMarkers() to add markers to stations
+ * @returns {void}
  */
 export function getStations() {
     fetch("/api/stations")
@@ -20,16 +20,15 @@ export function getStations() {
 
 /**
  * Fetches live station information from JCDecaux API
- * 
  * @async
- * @returns {Promise-<Array>} Array of objects, each object contains live information about a station
+ * @returns {Promise-<Array>} Live information about stations
  */
 async function loadCurrentBike(){
   const response = await fetch("/api/external/jcdecaux/current");
   const data = await response.json();
   return data.stations;
 }
-// store the return value of loadCurrentBike()
+// store the return value of loadCurrentBike() - for marker 
 const currentStationData = await loadCurrentBike();
 
 // load AdvancedMarkerElement from google maps marker library
@@ -39,20 +38,21 @@ const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 /**
  * Adds interactive markers to all Dublin Bike stations
  * 
- *    Creates custom icon for each marker
- *    Markers positioned at station's coordinates
- *    Click listener added to markers to fetch live data from JCDecaux API
- *    Displays infoWindow popup
+ * Creates custom icon for each marker
+ * Markers positioned at station's coordinates
+ * Click listener added to markers to fetch live data from JCDecaux API
+ * Displays infoWindow popup
  * 
- * @param {Array<Object>} stations Array of objects, each object contains static information about a station
+ * @param {Array<Object>} stations Contains static information about a station
+ * @returns {void}
  */
 function addMarkers(stations){
   for (const station of stations){
-    // create custom icon
+    // create custom icon that displays bike availability for station
     const icon = document.createElement("div");
     icon.className = "marker_icon";
-    let findStation = currentStationData.find(s => s.station_id === station.number);
-    let markerText = findStation.available_bikes;
+    const findStation = currentStationData.find(s => s.station_id === station.number); // find appropriate station only
+    const markerText = findStation.available_bikes;
     icon.textContent = markerText;
 
     // create marker
@@ -62,7 +62,7 @@ function addMarkers(stations){
         lng: station.lng,
       },
       map: myMap,
-      content: icon  // add custom icon to marker
+      content: icon 
     });
 
     // add functionality to markers - opens infoWindow
@@ -72,14 +72,14 @@ function addMarkers(stations){
     .then((data) => {
 
       const currentData = data.stations.find(s => s.station_id === station.number);
-      displayInfoWindow(currentData, station); //display infoWindow popup
+      displayInfoWindow(currentData, station);
 
       // close side panels
       document.getElementById("bike_info_container").style.display = "none";
       document.getElementById("prediction_container").style.display = "none";
 
     }).catch((error) => {
-      console.error("Error fetching current data", error);
+      console.error("Error fetching current data: ", error);
     });
     });
   };

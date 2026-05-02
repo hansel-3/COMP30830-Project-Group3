@@ -488,6 +488,10 @@ input:hover{
   opacity: 0.7;
 }
 
+.dark_btn:active{
+  opacity: 0.7;
+}
+
 .message, #error{
   margin: 0;
   font-size: 0.8rem;

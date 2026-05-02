@@ -4,7 +4,7 @@ const passwordInput = document.querySelector('input[name="password"]');
 
   form.addEventListener("submit", (e) => {
     if (passwordInput.value.length < 8) {
-      e.preventDefault(); // stop submission
+      e.preventDefault(); // prevents page reload upon submission
 
       // display message to user
       document.querySelector(".warning").style.display = "block";

@@ -1,29 +1,39 @@
-import { my_map } from "./index.js";
-import { displayDetailedBikes} from "./display_bikes.js";
+import { myMap } from "./index.js";
+import { displayDetailedBikes} from "./displayBikes.js";
 
 const infoWindow = new google.maps.InfoWindow();
   
-// function to display infoWindow
-export function displayInfw(dyn, station){
+/**
+ * Opens InfoWindow popup containing live station information
+ * 
+ * Opens detailed station information via displayDetailedBikes()
+ * @param {Object} dynamicData Live station information (bike/stand availability, station status)
+ * @param {Object} staticData Static station information (station name, number)
+ * @returns {void}
+ */
+export function displayInfoWindow(dynamicData, staticData){
 
+  // define infoWindow content
   let content = `
         <div class="infw_div">
-          <p class="infw_title">Station ${station.number}: ${station.name}</p>
+          <p class="infw_title">Station ${staticData.number}: ${staticData.name}</p>
           <div class="bike_summary">
-              <p class="infw_status"> ${dyn.status}</p>
-              <p class="infw_count">${dyn.available_bikes}<i class="fa-solid fa-bicycle"></i></p>
-              <p class="infw_count">${dyn.available_stands}<i class="fa-solid fa-square-parking"></i></p>
+              <p class="infw_status"> ${dynamicData.status}</p>
+              <p class="infw_count">${dynamicData.available_bikes}<i class="fa-solid fa-bicycle"></i></p>
+              <p class="infw_count">${dynamicData.available_stands}<i class="fa-solid fa-square-parking"></i></p>
           </div>
           <button class="more_info_btn">More Information</button> 
         </div>
       `;
+  // add listener when infoWindow exists in DOM
   infoWindow.addListener("domready", () => {
         const btn = document.querySelector(".more_info_btn");
         if(btn) {
-            btn.onclick = () => displayDetailedBikes(dyn, station);
+            btn.onclick = () => displayDetailedBikes(dynamicData, staticData);
         };
       });
+  // set infoWindow properties
   infoWindow.setContent(content);
-  infoWindow.setPosition({lat: station.lat, lng: station.lng});
-  infoWindow.open(my_map);
+  infoWindow.setPosition({lat: staticData.lat, lng: staticData.lng});
+  infoWindow.open(myMap);
 }

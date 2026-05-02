@@ -15,9 +15,9 @@ try {
  * 
  * Each entry in the list is created as a clickable button which opens detailed information for selected station 
  * Calls searchList() to implement search function
- * 
  * @param {Array<Object>} dynamicData Live information for each station
  * @param {Array<Object>} staticData Static information for each station
+ * @returns {void}
  */
 export function displayStationList(dynamicData, staticData){
   // reset stations list
@@ -46,13 +46,13 @@ export function displayStationList(dynamicData, staticData){
   element.innerHTML = content;
   stationList.appendChild(element);
 
-  const findStation = staticData.find(s => s.number === entry.station_id);
+  const findStation = staticData.find(s => s.number === entry.station_id); // find selected station only
   element.onclick = ()=> {
     displayDetailedBikes(entry, findStation);
     displayInfoWindow(entry, findStation);
   };
 });
-// get all station buttons and pass into station search function
+// pass station buttons into station search function
 const buttons = document.querySelectorAll(".station");
 searchList(buttons);
 };
@@ -62,9 +62,9 @@ searchList(buttons);
  * 
  * Displays station-specific live information 
  * Fetches historical bike availability data for charts 
- * 
  * @param {Object} dynamicData Live information for selected station
  * @param {Object} staticData Static information for selected station
+ * @returns {void}
  */
 export function displayDetailedBikes(dynamicData, staticData){
   // open station information board side panel
@@ -72,7 +72,7 @@ export function displayDetailedBikes(dynamicData, staticData){
   div.style.display = "block";
    
   setTimeout(() => {
-    div.scrollTop = 0; // set scroll position to the top after opening div
+    div.scrollTop = 0; // set scroll position to the top
   }, 20);
 
   // close other side panels
@@ -101,10 +101,10 @@ export function displayDetailedBikes(dynamicData, staticData){
         })
         // draw historic data charts
         google.charts.setOnLoadCallback(() => {
-        drawBikeChart(xAxis, yAxisBikes,"No. of Bikes", "bike_chart1");
-        drawBikeChart(xAxis, yAxisStands,"No. of Parking Spaces", "bike_chart2" );
+        drawBikeChart(xAxis, yAxisBikes, "No. of Bikes", "bike_chart1");
+        drawBikeChart(xAxis, yAxisStands, "No. of Parking Spaces", "bike_chart2" );
     })
-  }).catch((error) => console.log("failed to fetch bike history data.", error));
+  }).catch((error) => console.log("Failed to fetch bike history data: ", error));
 }
 
 
@@ -113,9 +113,9 @@ export function displayDetailedBikes(dynamicData, staticData){
  * 
  * Ensures correct grammar for text displayed
  * Calls drawPie() to display bike availability pie chart
- * 
  * @param {Object} dynamicData Live information about selected station
  * @param {Object} staticData Static information about selected station
+ * @returns {void}
  */
 function displayMoreInfo(dynamicData, staticData){
   // find banking status for station
@@ -162,6 +162,6 @@ function displayMoreInfo(dynamicData, staticData){
 
   // add functionilty to "view bike forecast" button - opens prediction side panel
   document.querySelector(".open_predict_btn").addEventListener("click", ()=>{
-     displayPredictionDetails(staticData);
-  });
+       displayPredictionDetails(staticData);
+    })
 };
