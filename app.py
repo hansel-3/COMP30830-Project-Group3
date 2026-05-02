@@ -5,12 +5,10 @@ from datetime import timedelta, datetime
 import requests
 from database import dbinfo
 from werkzeug.security import generate_password_hash, check_password_hash
-from dotenv import load_dotenv
 import pickle
 import json
+import numpy as np
 import pandas as pd
-
-load_dotenv()
 
 app = Flask(__name__)
 
@@ -333,7 +331,7 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET","POST"])
 def signup():
 
     user_taken = None
