@@ -2,8 +2,6 @@
 # Generative AI Chat Document – Yuetong
 
 ## 1. Basic Information
-
-**Project:** COMP30830 Dublin Bikes Web Application  
 **Student:** Yuetong  
 **Group:** Group 3  
 
