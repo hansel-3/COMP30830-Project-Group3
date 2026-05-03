@@ -25,19 +25,22 @@ Flask based web application for bike sharing in Dublin City, providing real-time
 root/
 |
 |---for_database/                            
-|---|-----collect_timeseries.py                 # JCDecaux & OpenWeatherMap web scraper
-|---|-----dbinfo.py                             # JCDecaux & OpenWeatherMap information
-|---|-----export_static_stations.py             # Collects station information
-|---|-----static_stations.json                  # Stores station information
+|---|-----collect_timeseries.py                     # JCDecaux & OpenWeatherMap web scraper
+|---|-----dbinfo.py                                 # JCDecaux & OpenWeatherMap information
+|---|-----export_static_stations.py                 # Collects station information
+|---|-----static_stations.json                      # Stores station information
+|
+|---generative_ai/                                  # Gen AI documents for each collaborator    
+|---|-----Yuetong_Generative_AI_Chat_Document.md
 | 
 |---prediction-model/                           
-|   |-----bike_availability_model.joblib        # Trained model alternative format
-|   |-----bike_availability_model.pkl           # Trained model
-|   |-----model_features.json                   # Feature order for prediction
-|   |-----train_model.py                        # Model training script
+|   |-----bike_availability_model.joblib            # Trained model alternative format
+|   |-----bike_availability_model.pkl               # Trained model
+|   |-----model_features.json                       # Feature order for prediction
+|   |-----train_model.py                            # Model training script
 |
 |---static/                              
-|   |-----css/                                  # Custom UI styling
+|   |-----css/                                      # Custom UI styling
 |   |   |-----forms.css
 |   |   |-----index.css
 |
@@ -47,30 +50,30 @@ root/
 |   |   |-----weather_background.jpeg
 |
 |   |-----javascript/
-|   |   |-----displayBikes.js                   # Renders bike availability
-|   |   |-----displayPrediction.js              # Renders bike availability prediction
-|   |   |-----displayStations.js                # Displays stations on map
-|   |   |-----displayWeather.js                 # Renders weather data
-|   |   |-----drawCharts.js                     # Graphs and charts
-|   |   |-----eventListeners.js                 # Handles event listeners
-|   |   |-----forms.js                          # Signup and login forms
-|   |   |-----index.js                          # Initializes Google Map
-|   |   |-----infoWindow.js                     # Renders live station information
-|   |   |-----searchStationsList.js             # Defines station search function
-|   |   |-----toggleMarkers.js                  # Renders live bike availability
+|   |   |-----displayBikes.js                       # Renders bike availability
+|   |   |-----displayPrediction.js                  # Renders bike availability prediction
+|   |   |-----displayStations.js                    # Displays stations on map
+|   |   |-----displayWeather.js                     # Renders weather data
+|   |   |-----drawCharts.js                         # Graphs and charts
+|   |   |-----eventListeners.js                     # Handles event listeners
+|   |   |-----index.js                              # Initializes Google Map
+|   |   |-----infoWindow.js                         # Renders live station information
+|   |   |-----login.js                              # Login form logic
+|   |   |-----searchStationsList.js                 # Defines station search function
+|   |   |-----signup.js                             # Signup form logic
+|   |   |-----toggleMarkers.js                      # Renders live bike availability
 |
-|---templates/                                  # HTML templates
-|   |-----index.html                            # Main HTML document
+|---templates/                                      # HTML templates
+|   |-----index.html                                # Main HTML document
 |   |-----login.html
 |   |-----signup.html
 |
 |---.gitignore
-|---app.py                                      # Main Flask application
-|---ec2-Development.md                          # AWS EC2 deployment steps
-|---Git-Workflow.md                             # Git branching methodology
+|---app.py                                         # Main Flask application
+|---ec2-Development.md                             # AWS EC2 deployment steps
+|---Git-Workflow.md                                # Git branching methodology
 |---README.md
-|___requirements.txt                            # Python dependencies
-
+|___requirements.txt                               # Python dependencies
 ```
  Frontend code:
  - Javascript, CSS and image files are located within the static/ folder.
