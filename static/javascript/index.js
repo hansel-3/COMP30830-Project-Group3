@@ -7,7 +7,7 @@ const waitForGoogleMaps = setInterval(() => {
   if (window.google && google.maps) { 
     clearInterval(waitForGoogleMaps); 
     initMap(); 
-  } }, 50);
+  }}, 30);
 
 /**
    * Initializes Google Map on the website
@@ -15,8 +15,12 @@ const waitForGoogleMaps = setInterval(() => {
    * Creates map centred on Dublin
    * Calls getStations() to fetch for station data
    * Calls displayCurrentWeather() to show live weather in top banner
+   * Sets up button event listeners
+   * @returns {void}
    */
+  
 export let myMap;
+export let infoWindow;
 
 function initMap() {
   // set Dublin coordinates
@@ -42,6 +46,9 @@ function initMap() {
   console.error("Error when creating map instance", error);
   return;
 }
+// create reusable infoWindow variable
+infoWindow = new google.maps.InfoWindow();
+
 // get bike station data
 getStations();
 
@@ -51,6 +58,3 @@ displayCurrentWeather();
 // add event listeners to buttons in DOM
 setupEventListeners();
 } 
-
-// make map function call global
-window.initMap = initMap;

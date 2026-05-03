@@ -1,8 +1,7 @@
 import { myMap } from "./index.js";
 import { displayDetailedBikes} from "./displayBikes.js";
+import { infoWindow } from "./index.js";
 
-const infoWindow = new google.maps.InfoWindow();
-  
 /**
  * Opens InfoWindow popup containing live station information
  * 
