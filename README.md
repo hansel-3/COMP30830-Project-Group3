@@ -24,8 +24,14 @@ Flask based web application for bike sharing in Dublin City, providing real-time
 ```text
 root/
 |
-|---data_for_prediction_model/                  # Contains prediction model
-|   |-----bike_availability_model.joblib
+|---for_database/                            
+|---|-----collect_timeseries.py                 # JCDecaux & OpenWeatherMap web scraper
+|---|-----dbinfo.py                             # JCDecaux & OpenWeatherMap information
+|---|-----export_static_stations.py             # Collects station information
+|---|-----static_stations.json                  # Stores station information
+| 
+|---prediction-model/                           
+|   |-----bike_availability_model.joblib        # Trained model alternative format
 |   |-----bike_availability_model.pkl           # Trained model
 |   |-----model_features.json                   # Feature order for prediction
 |   |-----train_model.py                        # Model training script
@@ -74,7 +80,7 @@ root/
  - `app.py` contains the main backend code responsible for initiating the application via Flask, retrieving data for frontend use and defining API routes.
 
  Machine learning model: 
- - `data_for_prediction_model/` folder contains trained model and training script.
+ - `prediction-model/` folder contains trained model and training script.
 
  Git Workflow:
  - A Git-Workflow.md file highlights the feature branch git workflow process used throughout the project.
