@@ -1,69 +1,110 @@
-## EC2 Deployment (Sprint 2)
+## EC2 Deployment
 
 ### Overview
 
-The Flask application has been successfully deployed on an AWS EC2 instance and is accessible via public IP.
+The Dublin Bikes Flask web application was deployed on an AWS EC2 Ubuntu instance.
 
-All required endpoints return JSON responses and remain accessible after SSH disconnection (running in background via tmux).
+The final deployment uses Flask as the backend framework, Gunicorn as the WSGI server, Nginx as the reverse proxy, and a MySQL/MariaDB database for persistent data.
 
-### EC2 Setup
+The deployed application serves the frontend pages, backend API routes, database-backed station data, weather data, and the machine learning prediction endpoint.
 
-1. SSH into EC2
-2. Navigate to project directory:
+### Project Directory
 
-```bash
-cd ~/COMP30830-Project-Group3
-```
+After connecting to the EC2 instance through SSH, the project is located at:
 
-3. Activate virtual environment:
+* `~/COMP30830-Project-Group3`
 
-```bash
-source venv/bin/activate
-```
+The Python virtual environment can be activated with:
 
-4. Set environment variables:
+* `source venv/bin/activate`
 
-```bash
-export JCDECAUX_API_KEY="your_key"
-export OPENWEATHER_API_KEY="your_key"
-```
+### Environment Configuration
 
-5. Start Flask using tmux:
+The application requires API keys and database credentials to be configured locally on EC2.
 
-```bash
-tmux new -s flask
-python3 app.py
-```
+Required credentials include:
 
-Detach without stopping the server:
+* JCDecaux API key
+* OpenWeatherMap API key
+* Google Maps API key
+* Database host, user, password, and database name
+* Flask secret key
 
-```
-Ctrl + B, then D
-```
+Real API keys, database passwords, and secret credentials are not committed to GitHub.
+
+### Running the Application on EC2
+
+The final EC2 deployment uses Gunicorn and Nginx rather than manually running `python app.py`.
+
+Useful service checks:
+
+* `sudo systemctl status bikeapp`
+* `sudo systemctl status nginx`
+
+Useful restart commands:
+
+* `sudo systemctl restart bikeapp`
+* `sudo systemctl restart nginx`
+
+Useful log checks:
+
+* `sudo journalctl -u bikeapp -n 100 --no-pager`
 
 ### Verification
 
-The following endpoints were tested successfully:
+The deployment was verified by checking:
 
-* `/health`
-* `/api/weather/current`
-* `/api/stations/current`
+* EC2 instance status
+* SSH access to the project directory
+* Gunicorn service status
+* Nginx service status
+* Flask health endpoint
+* Public access through the EC2 public IPv4 address
+* API JSON responses
+* Database connectivity
+* Frontend map and station display
+* ML prediction file availability and model loading behaviour
 
-Verification method:
+Example backend verification:
 
-```bash
-sudo ss -lntp | grep :5000
-```
+* `curl http://127.0.0.1:5000/health`
 
-Output confirms Flask is listening on 0.0.0.0:5000.
+Example socket check:
+
+* `sudo ss -lntp | grep -E ':80|:5000'`
+
+Expected result:
+
+* Nginx listens on port `80`
+* Gunicorn/Flask listens internally on `127.0.0.1:5000`
+
+### Main Deployment Checks
+
+The following application functions were checked after deployment:
+
+* Main web application accessible through EC2 public IP
+* User login and signup pages available
+* Station data returned as JSON
+* Current bike availability returned as JSON
+* Historical station availability available for frontend charts
+* Weather information available for frontend display
+* Prediction endpoint connected to the deployed machine learning model
+* Gunicorn and Nginx services active
 
 ### Notes
 
-* Resolved 403 error caused by missing JCDecaux API environment variable.
-* Resolved port conflict issues on port 5000.
-* Ensured background execution using tmux to maintain availability after SSH disconnect.
-* Confirmed external accessibility via public EC2 IP.
+During deployment and final integration, the following issues were checked or resolved:
 
----
+* EC2 SSH access and project directory verification
+* Python dependency installation
+* Flask service startup issues
+* Gunicorn and Nginx runtime configuration
+* Database connection debugging
+* API endpoint verification
+* Missing or incorrect environment variables
+* ML model file availability on EC2
+* Runtime model loading constraints
+* Public IP access to the deployed frontend
 
+The final deployment uses the EC2 production setup rather than running Flask manually through `python app.py` or keeping the application alive with `tmux`.
 
