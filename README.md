@@ -1,9 +1,9 @@
 # Dublin Bike Sharing Web Application
-Flask based web application for bike sharing in Dublin City, providing real-time city bike data.
+Flask-based web application for bike sharing in Dublin City, providing real-time city bike data.
 
 ## Features
 ### Bike Stations Data
-- Real time bike availability data from JCDecaux API.
+- Real-time bike availability data from JCDecaux API.
 - Displayed on interactive map.
 - Historical bike availability data.
 
@@ -89,7 +89,7 @@ root/
  - A Git-Workflow.md file highlights the feature branch git workflow process used throughout the project.
 
  EC2 Deployment:
- - The EC2 deployment process is described in the `ec2-deployment.md` file.
+ - The EC2 deployment process is described in the `ec2-Development.md` file.
 
 
  ## Setup Instructions  
@@ -111,21 +111,36 @@ Prerequisites:
  ```bash
  pip install -r requirements.txt
  ```
- 4. Set up environment variables.
- ```env
+4. Set up environment variables.
+
+Create a `.env` file in the project root:
+
+```env
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=your_database
+DB_PORT=3306
+
+SECRET_KEY=your_flask_secret_key
 
 GOOGLE_MAPS_API_KEY=your_google_maps_key
- ```
+JCDECAUX_API_KEY=your_jcdecaux_key
+OPENWEATHER_API_KEY=your_openweather_key
+```
 
-5. Input JCDecaux and OpenWeatherMap API key into `dbinfo.py`.
+Real API keys, database passwords and secret credentials should not be committed to GitHub.
+
+5. Configure local API credentials if required.
+
+Some data collection scripts may also read credentials from `for_database/dbinfo.py`. This file should be created locally based on the project configuration format:
+
 ```python
 API_KEY = "your_JCDecaux_API_key"
-OPENWEATHER_KEY = "your_open_weather_API_key"
+OPENWEATHER_KEY = "your_OpenWeatherMap_API_key"
 ```
+
+Do not commit real API keys or database credentials.
 
 6. Run the application
  ```bash
@@ -137,11 +152,88 @@ OPENWEATHER_KEY = "your_open_weather_API_key"
  http://127.0.0.1:5000
  ```
 
- ## Authentication
- - Access to API routes prohibited without authentication.
- - Users must create account and login before allowed access.
- - Session stored using Flask session cookies.
+## Data Collection
 
+The data collection scripts are located in the `for_database/` folder.
+
+To collect data, run:
+- `cd for_database`
+- `python collect_timeseries.py`
+- `python export_static_stations.py`
+
+`collect_timeseries.py` collects dynamic bike availability data from the JCDecaux API and weather data from OpenWeatherMap.
+
+`export_static_stations.py` collects and exports static station information used by the frontend map.
+
+The collected data is stored in the MySQL database and is used by the Flask backend to support station display, availability history, weather display and prediction.
+
+
+
+## Main Flask Routes / API Endpoints
+
+The Flask backend defines routes for page rendering, user authentication, station data, weather data and bike availability prediction.
+
+Main routes used by the application:
+
+* `/` displays the main map page.
+* `/login` displays the login page and handles user login.
+* `/signup` displays the signup page and handles user registration.
+* `/logout` ends the current user session.
+* `/api/stations` returns static Dublin Bikes station information.
+* `/api/stations/current` returns the latest bike availability data.
+* `/api/stations/<station_id>/history` returns historical availability data for a selected station.
+* `/api/weather` returns weather data for display.
+* `/predict` returns predicted bike availability for a selected station, date and time.
+* `/health` is used as a health-check endpoint for deployment testing.
+
+The frontend JavaScript files use these routes to request data from the Flask backend and update the map, station information, charts, weather display and prediction result.
+
+## Database Tables
+
+The application uses a MariaDB/MySQL database named `local_databasejcdecaux`.
+
+The database contains the following tables:
+
+- `real_stations`: stores static Dublin Bikes station information, including station number, name, address, latitude, longitude, bike stand capacity and banking information.
+- `availability`: stores dynamic bike availability records collected over time, including available bikes, available bike stands, station status and update time.
+- `weather`: stores weather records used for weather display and prediction support.
+- `users`: stores registered user information for authentication.
+
+The deployed database was verified on EC2. At the time of verification, `real_stations` contained 115 station records and `availability` contained 43,683 availability records.
+
+The Flask backend queries these tables to support map display, station lookup, current bike availability, historical availability charts, weather information and user authentication.
+
+## Machine Learning Prediction
+
+The machine learning files are stored in the `prediction-model/` folder.
+
+The deployed prediction model is a `DecisionTreeRegressor`.
+
+The prediction target is `num_bikes_available`, which represents the number of available bikes at a selected station.
+
+The model uses eight input features:
+
+- `station_id`
+- `temperature`
+- `humidity`
+- `pressure`
+- `hour`
+- `day_of_week`
+- `is_weekend`
+- `month`
+
+The feature order is defined in `model_features.json` to keep training and inference consistent.
+
+The trained model is stored as `bike_availability_model.pkl` and `bike_availability_model.joblib`. The `train_model.py` script contains the model training process.
+
+Although the Random Forest model achieved slightly better accuracy, it was not used for deployment because its file size was too large for the EC2 environment. The deployed Decision Tree model was selected because it provided a practical balance between prediction accuracy and deployment size.
+
+The Flask `/predict` endpoint prepares the required feature vector, loads the trained model and returns the predicted bike availability to the frontend as JSON.
+ ## Authentication
+ - Access to API routes is prohibited without authentication.
+ - Users must create an account and log in before access is allowed.
+ - Sessions are stored using Flask session cookies.
+   
  ## Code Reuse
  This project makes use of several libraries, open sourced tools and external APIs.  
 
