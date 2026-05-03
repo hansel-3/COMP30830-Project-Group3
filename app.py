@@ -462,6 +462,6 @@ def main():
     return render_template("index.html", apikey=os.getenv("GOOGLE_MAPS_API_KEY"), title="Home Page")
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
 
 
