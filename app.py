@@ -3,7 +3,7 @@ import os
 import pymysql
 from datetime import timedelta, datetime
 import requests
-from database import dbinfo
+from for_database import dbinfo
 from werkzeug.security import generate_password_hash, check_password_hash
 import pickle
 import json
@@ -12,9 +12,17 @@ import pandas as pd
 
 app = Flask(__name__)
 
-app.secret_key = "secret key"
+# generate random secret key for session security
+app.secret_key = os.urandom(32)
 
 def get_db():
+    """
+    Creates MySQL database connection and stores
+    in Flask's application context
+
+    Returns:
+       pymysql.connections.Connection: Active database connection object
+    """
     if "db" not in g:
         g.db = pymysql.connect(
             host=os.getenv("DB_HOST", "127.0.0.1"),
@@ -26,6 +34,7 @@ def get_db():
         )
     return g.db
 
+# close databse connection
 @app.teardown_appcontext
 def close_db(_exc):
     db = g.pop("db", None)
@@ -33,6 +42,12 @@ def close_db(_exc):
         db.close()
 
 def fetch_bikes_json():
+    """
+    Fetch JCDecaux API for current station data
+
+    Returns:
+       dict: JSON response of live station information for each station
+    """
     r = requests.get(
         dbinfo.STATIONS_URL,
         params={"apiKey": dbinfo.API_KEY, "contract": dbinfo.CONTRACT},
@@ -42,6 +57,12 @@ def fetch_bikes_json():
     return r.json()  # list[dict]
 
 def fetch_weather_json():
+    """
+    Fetch OpenWeatherMap API for live weather information
+
+    Returns:
+       dict: JSON response of live weather information
+    """
     r = requests.get(
         dbinfo.OPENWEATHER_URL,
         params={
@@ -55,10 +76,12 @@ def fetch_weather_json():
     r.raise_for_status()
     return r.json()  # dict
 
+# health check route for application
 @app.route("/health")
 def health():
     return jsonify({"status": "ok", "time": datetime.now().isoformat()})
 
+# API endpoint for live station data
 @app.route("/api/external/jcdecaux/current")
 def external_stations_current():
     
@@ -76,15 +99,16 @@ def external_stations_current():
             "available_stands": s["available_bike_stands"],
             "status": s["status"]
         })
-
+ 
     if "user_id" not in session:
-        return jsonify({"error": "Unauthorized"})
+        return jsonify({"error": "Unauthorized"}) # deny access if user not logged in
 
     return jsonify({
         "scrape_time": datetime.now().isoformat(),
         "stations": cleaned
     })
 
+# API endpoint for live weather data
 @app.route("/api/external/weather/current")
 def external_weather_current():
     
@@ -108,13 +132,14 @@ def external_weather_current():
     }
 
     if "user_id" not in session:
-        return jsonify({"error": "Unauthorized"})
+        return jsonify({"error": "Unauthorized"}) # deny access if user not logged in
 
     return jsonify({
         "scrape_time": datetime.now().isoformat(),
         "weather": cleaned
     })
 
+# API endpoint for historic weather data
 @app.route("/api/weather/history")
 def weather_history():
     sql = """
@@ -127,13 +152,14 @@ def weather_history():
         """
     
     if "user_id" not in session:
-        return jsonify({"error": "Unauthorized"})
+        return jsonify({"error": "Unauthorized"}) # deny access if user not logged in
     
     db = get_db()
     with db.cursor() as cur:
         cur.execute(sql)
         return jsonify(cur.fetchall())
 
+# API endpoint for static station data
 @app.get("/api/stations")
 def api_stations():
     sql = """
@@ -143,13 +169,14 @@ def api_stations():
     """
 
     if "user_id" not in session:
-        return jsonify({"error": "Unauthorized"})
+        return jsonify({"error": "Unauthorized"}) # deny access if user not logged in
     
     db = get_db()
     with db.cursor() as cur:
         cur.execute(sql)
         return jsonify(cur.fetchall())
 
+# API endpoint for live station data for selected station
 @app.get("/api/stations/<int:station_id>/current")
 def api_stations_current(station_id: int):
     sql = """
@@ -169,13 +196,14 @@ def api_stations_current(station_id: int):
         ORDER BY a.number;
     """
     if "user_id" not in session:
-        return jsonify({"error": "Unauthorized"})
+        return jsonify({"error": "Unauthorized"}) # deny access if user not logged in
     
     db = get_db()
     with db.cursor() as cur:
         cur.execute(sql, (station_id,))
         return jsonify(cur.fetchall())
 
+# API endpoint for historic station data for selected station
 @app.get("/api/stations/<int:station_id>/history")
 def api_station_history(station_id: int):
     hours = request.args.get("hours", default=36, type=int)
@@ -207,13 +235,25 @@ def api_station_history(station_id: int):
         return jsonify(cur.fetchall())
     
 # ── Load model and feature list once at startup ───────────────────
-with open("data_for_prediction_model/bike_availability_model.pkl", "rb") as f:
+with open("prediction-model/bike_availability_model.pkl", "rb") as f:
     model = pickle.load(f)
 
-with open("data_for_prediction_model/model_features.json") as f:
+with open("prediction-model/model_features.json") as f:
     FEATURES = json.load(f)["features"]
 
 def fetch_openweather_forecast(date):
+    """
+    Fetch OpenWeatherMap forecast API
+
+    Filters forecast entries to find block containing specified date
+    Computes average temperature, humidity and pressure for specified date
+
+    Args:
+       date (str): Date in YYYY-MM-DD HH:MM:SS format
+
+    Returns:
+       dict: Average temperature, humidity and pressure for date
+    """
     r = requests.get(
         dbinfo.OPENWEATHER_FORECAST_URL,
         params = {
@@ -229,11 +269,8 @@ def fetch_openweather_forecast(date):
     forecast_json = r.json()
     forecast_list = forecast_json["list"]
 
-    temp = 0
-    humidity = 0
-    pressure = 0
+    temp, humidity, pressure, count = 0, 0, 0, 0
 
-    count = 0
     timestamps = []
     for i in forecast_list:
         if date in i["dt_txt"]:
@@ -241,13 +278,16 @@ def fetch_openweather_forecast(date):
             humidity += i["main"]["humidity"]
             pressure += i["main"]["pressure"]
             count += 1
-        timestamps.append(i["dt_txt"])
+        timestamps.append(i["dt_txt"]) # collect all timestamps
     
     date_not_found = False
     for i in timestamps:
         if date not in i:
-            date_not_found = True
+            date_not_found = True 
     
+    # occurs when current time is between 21:00 and 23:59
+    # data for rest of day is gone
+    # just use values of 00:00 block (next day)
     if date_not_found == True:
         temp += forecast_list[0]["main"]["temp"]
         humidity += forecast_list[0]["main"]["humidity"]
@@ -269,6 +309,13 @@ def fetch_openweather_forecast(date):
 
 @app.route("/predict", methods=["GET"])
 def predict():
+    """ 
+    Predicts bike availability for specified date using trained model
+    Computes valid date inputs and checks if user's input falls within valid range
+    
+    Returns:
+       dict: JSON containing prediction value for date, time and station selected
+    """
     try:
         # 1. Read query parameters
         date       = request.args.get("date")       # e.g. 2025-04-06
@@ -281,7 +328,7 @@ def predict():
         if not date or not time or not station_id:
             return jsonify({"error": "Missing date, time, or station_id parameter"}), 400
         
-        invalid_stations = ["34", "46", "81"]
+        invalid_stations = ["34", "46", "81"] 
         if station_id in invalid_stations or not(1 <= int(station_id) <= 117):
             return jsonify({"error": "Invalid station number entry. This station does not exist."}), 400
             
@@ -292,22 +339,18 @@ def predict():
         month       = dt.month
         is_weekend  = 1 if day_of_week >= 5 else 0
 
+        # 3. Compute valid date entries
         base = datetime.now()
-
-        if base.minute > 0:
-            base = base.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
-        else:
-            base = base.replace(second=0, microsecond=0)
+        base = base.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1) # round time to next hour
+        limit = base + timedelta(days = 5) - timedelta(hours = 1) # find date 5 days from now
         
-        limit = base + timedelta(days = 5) - timedelta(hours = 1)
-
-        if not (base <= dt <= limit):
-            return jsonify({"error": "Invalid date entry"}), 400
+        if not (base <= dt <= limit): # user's date must fall between valid range
+            return jsonify({"error": "Invalid date entry. Date must fall within 5 days from next hour."}), 400
         
-        # 3. Get weather data for that date
+        # 4. Get weather data for user's date
         weather = fetch_openweather_forecast(date)
 
-        # 4. Build input DataFrame — column order must match training
+        # 5. Build input DataFrame — column order must match training
         input_df = pd.DataFrame([{
             "station_id":  int(station_id),
             "temperature": weather["temperature"],
@@ -319,7 +362,7 @@ def predict():
             "month":       month,
         }])[FEATURES]   # reorder to match exact training order
 
-        # 5. Predict and return
+        # 6. Predict and return
         prediction = model.predict(input_df)[0]
         return jsonify({
             "predicted_available_bikes": round(float(prediction), 1),
@@ -373,8 +416,8 @@ def signup():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     
-    wrong_cred = None
-    wrong_pw = None
+    wrong_cred = None 
+    wrong_pw = None 
 
     if request.method =="POST":
         username = request.form["username"]
@@ -388,15 +431,18 @@ def login():
         with db.cursor() as cur:
             cur.execute(sql, (username,))
             user = cur.fetchone()
-
+        
+        # username and password found
         if user and check_password_hash(user["password"], password):
             session["user_id"] = user["username"]
             return redirect("/home")
         
-        elif user:
+        # user exists but password is incorrect
+        elif user:                              
             wrong_pw = "The password you've entered is incorrect."
             return render_template("login.html", wrong_pw=wrong_pw, username=username)
         
+        # user does not exist
         else:
             wrong_cred = "The login information you've entered is incorrect."
             return render_template("login.html", wrong_cred=wrong_cred)
