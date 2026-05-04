@@ -31,7 +31,7 @@ root/
 |---|-----static_stations.json                      # Stores station information
 |
 |---generative_ai/                                  # Gen AI documents for each collaborator    
-|---|-----Glory's AI_Chat_Log_COMP30830.docx
+|---|-----Glory_Generative_AI_Document.md
 |---|-----Hansel_Generative_AI_Document.md
 |---|-----Yuetong_Generative_AI_Chat_Document.md
 | 
