@@ -67,7 +67,7 @@ The chat explained that fetching is an asynchronous process in javascript. This 
 
 ## 3. InfoWindow Button Issue
 
-After creating the infoWindow popup it was tested to ensure operation was as expected. After the first implementation of the code it was found that the "more information" button never worked when first clicked but when subsequent infoWindow popups were opened the button worked normally. The console revealed that the button did not exist (Cannot set properties of null (setting 'onclick')) for the first infoWindow clicked but existed afterwards when more infoWindows were triggered. I consulted with ChatGPT.
+After creating the infoWindow popup it was tested to ensure operation was as expected. After the first implementation of the code, it was found that the "more information" button never worked when first clicked, but when subsequent infoWindow popups were opened the button worked normally. The console revealed that the button did not exist (Cannot set properties of null (setting 'onclick')) for the first infoWindow clicked but existed afterwards when more infoWindows were triggered. I consulted with ChatGPT.
 
  **Prompt:** I received "Cannot set properties of null (setting 'onclick')" for button within google infowindow pop up when I first open the popup but when I open subsequent popups the button exists and functionality is restored. How does this happen?  
  **Response:** 
