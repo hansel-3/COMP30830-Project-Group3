@@ -81,7 +81,7 @@ right away, getElementById returns null → hence:
 
 Cannot set properties of null
  ```
- The chat then suggested I use "domready":
+ The chat then suggested I use `domready`:
  ```
  const infoWindow = new google.maps.InfoWindow({
   content: '<button id="myButton">Click me</button>'
@@ -96,7 +96,7 @@ infoWindow.addListener("domready", () => {
   }
 });
  ```
-InfoWindow content is rendered asynchronously in relation to the rest of the code. Even when the popup shows, its content is not guaranteed to exist in the DOM. Attaching a "domready" listener to the infoWindow waits for the DOM of the popup to exist before executing the code within its block.
+InfoWindow content is rendered asynchronously in relation to the rest of the code. Even when the popup shows, its content is not guaranteed to exist in the DOM. Attaching a `domready` listener to the infoWindow waits for the DOM of the popup to exist before executing the code within its block.
 
 ## 4. Search Function Implementation
 The stations list was initially created to simply be a scrollable list of all the stations on the map. I realised it may also be quite beneficial to include a search function which filters through the list based on user input. However, tracking live user input in this way was not something I was familiar with.
