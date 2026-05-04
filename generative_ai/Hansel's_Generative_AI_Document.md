@@ -29,16 +29,16 @@ Yes — the callback is one of the most common causes of exactly this error, esp
 
 When you see:
 
-initMap is not a function
+initMap is not a function  
 
-and you're using a URL like:
-<script>https://maps.googleapis.com/maps/api/js?key=KEY&callback=initMap</script>
+and you're using a URL like:  
+<script>https://maps.googleapis.com/maps/api/js?key=KEY&callback=initMap</script>  
 
-it means Google is trying to call window.initMap() immediately when the API finishes loading.
+it means Google is trying to call window.initMap() immediately when the API finishes loading.  
 
-So the rule is very strict:
+So the rule is very strict:  
 
-At the moment the Maps script runs its callback, window.initMap must already exist and be a function.
+At the moment the Maps script runs its callback, window.initMap must already exist and be a function.  
 
 ```
 This response helped my understanding of how callback operates and how it interacts with other parts of the code. In my case, `initMap` was being called by the script tag before it existed. From this I decided to remove callback entirely and adopt another approach, using `setInterval` to wait for the script to complete loading before beginning the main javascript.
