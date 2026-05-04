@@ -31,8 +31,7 @@ When you see:
 initMap is not a function
 
 and you're using a URL like:
-<script>https://maps.googleapis.com/maps/api/js?key=KEY&callback=initMap
-</script>
+<script>https://maps.googleapis.com/maps/api/js?key=KEY&callback=initMap</script>
 
 it means Google is trying to call window.initMap() immediately when the API finishes loading.
 
