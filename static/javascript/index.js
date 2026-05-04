@@ -8,7 +8,9 @@ const waitForGoogleMaps = setInterval(() => {
     clearInterval(waitForGoogleMaps); 
     initMap(); 
   }}, 30);
-
+  
+export let myMap;
+export let infoWindow;
 /**
    * Initializes Google Map on the website
    * 
@@ -18,10 +20,6 @@ const waitForGoogleMaps = setInterval(() => {
    * Sets up button event listeners
    * @returns {void}
    */
-  
-export let myMap;
-export let infoWindow;
-
 function initMap() {
   // set Dublin coordinates
   const dublin = {lat: 53.3498, lng: -6.2603};
