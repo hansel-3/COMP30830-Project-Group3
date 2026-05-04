@@ -43,7 +43,7 @@ At the moment the Maps script runs its callback, window.initMap must already exi
 This response helped my understanding of how callback operates and how it interacts with other parts of the code. In my case, `initMap` was being called by the script tag before it existed. From this I decided to remove callback entirely and adopt another approach, using `setInterval` to wait for the script to complete loading before beginning the main javascript.
 
 ## 2. Fetched Data Bug Fixing
-I fetched for data from the /stations API endpoint and saved it into a variable. As I tried to use this variable later in my code the console alerted me saying the variable was undefined. I did not understand how this could happen as I explicitly defined it earlier. I consulted with ChatGPT.
+Upon fetching for data from the /stations API endpoint and storing it in a variable, the variable was deemed undefined when attempting to use later in the code. The answer to how this would happen was not clear as it was explicitly assigned to a value earlier in the code. I consulted with ChatGPT.
 
 **Prompt:** I fetched for data then assigned it to a variable. When I try to use that variable later in the code it says it is undefined. Why is this?  
 **Response:** 
@@ -61,12 +61,12 @@ async function loadData() {
   console.log(data); // ✔ works
 }
 ```
-The chat explained that fetching is an asynchronous process in javascript. This means that the code continues to run even before data from the fetch call has fully arrived, which explained why the variable was still undefined even after I believed I had assigned it a value.  
-async/await solves issues with asynchronous activity in javascript. async makes a function return a promise while await waits for a promise to resolve. In this way,the variable is only created after the await finishes and doesn't get used too early.
+The chat explained that fetching is an asynchronous process in javascript. This means that the code continues to run even before data from the fetch call has fully arrived, which explained why the variable was still undefined even after performing an assignment operation.
+`async/await` solves issues with asynchronous activity in javascript. `async` makes a function return a promise, while `await` waits for a promise to resolve. In this way, the variable is only created after the `await` finishes and doesn't get used too early.
 
 ## 3. InfoWindow Button Issue
 
- After creating the infoWindow popup I tested to ensure operation was as expected. After my first implementation of the code I noticed that the "more information" button never worked when first clicked but when subsequent infoWindow popups were opened the button worked normally. I was unsure of how this could happen. I inspected the console and it revealed that the button did not exist (Cannot set properties of null (setting 'onclick')) for the first infoWindow clicked but existed afterwards when more infoWindows were triggered. I consulted with ChatGPT.
+After creating the infoWindow popup it was tested to ensure operation was as expected. After the first implementation of the code it was found that the "more information" button never worked when first clicked but when subsequent infoWindow popups were opened the button worked normally. The console revealed that the button did not exist (Cannot set properties of null (setting 'onclick')) for the first infoWindow clicked but existed afterwards when more infoWindows were triggered. I consulted with ChatGPT.
 
  **Prompt:** I received "Cannot set properties of null (setting 'onclick')" for button within google infowindow pop up when I first open the popup but when I open subsequent popups the button exists and functionality is restored. How does this happen?  
  **Response:** 
@@ -99,7 +99,7 @@ infoWindow.addListener("domready", () => {
 InfoWindow content is rendered asynchronously in relation to the rest of the code. Even when the popup shows, its content is not guaranteed to exist in the DOM. Attaching a "domready" listener to the infoWindow waits for the DOM of the popup to exist before executing the code within its block.
 
 ## 4. Search Function Implementation
-I initially created the stations list to simply be a scrollable list of all the stations on the map. I realised it may also be quite beneficial to have a search function which filters through the list based on user input. However, I was unsure of how to track live user input in this way.
+The stations list was initially created to simply be a scrollable list of all the stations on the map. I realised it may also be quite beneficial to include a search function which filters through the list based on user input. However, tracking live user input in this way was not something I was familiar with.
 
 **Prompt:** I have a long list of items and want users to be able to type the item they are looking for into a search bar. In javascript, what can I use to track user input?    
 **Response:**
@@ -117,8 +117,6 @@ searchBox.addEventListener("input", (event) => {
 });
 ```
 From this I discovered the "input" attribute of .addEventListener. It dynamically tracks user input and thus, was applicable to my query.
-
-
 
 ## 5. Password Storage
 
@@ -149,12 +147,12 @@ from werkzeug.security import check_password_hash
 check_password_hash(hashed_password, "mysecretpassword")  # True
 check_password_hash(hashed_password, "wrongpass")         # False
 ```
- Through this I discovered werkzeug.security, a module in the Python Werkzeug library commonly used to generate hashed passwords in Python web frameworks like Flask. I then implemented this hashing method into the application.
+Through this I discovered `werkzeug.security`, a module in the Python `Werkzeug library` commonly used to generate hashed passwords in Python web frameworks like Flask. I then implemented this hashing method into the application.
 
 
 ## 6. Securing Home Page and API Routes
 
-The home page as well as all API routes were easily accessible to users even without logging in. This defeats the purpose of having a signup/login system as users without accounts could access the home page and API route contents by simply typing the full URL. I wanted a way to protect these pages so that only users who have created an account and logged in can access the home page.
+The home page as well as all API routes were easily accessible to users even without logging in. This defeats the purpose of having a signup/login system as users without accounts could access the home page and API route contents by simply typing the full URL. Implementing a method to protect these pages so that only users who have created an account and logged in can access the home page would be a more realistic approach.
 
 **Prompt:** What are some ways I can protect the main page of my flask app from users who have not logged in?  
 **Response:**  
@@ -180,7 +178,7 @@ def home():
         return redirect(url_for("login"))
     return "Protected content"
 ```
-After reading through the suggestions I decided to implement this protection using Flask's session. A Flask session is a way to store small amounts of user-specific data across such as login status. It can be used to remember whether a user is logged in while they navigate a website.
+After reading through the suggestions I decided to implement this protection using Flask's `session`. A Flask session is a way to store small amounts of user-specific data across such as login status. It can be used to remember whether a user is logged in while they navigate a website.
 
 I then wanted a way to allow users to properly logout. This would involve closing the session.
 **prompt:** I track user login by using Flask session. How do allow users to log out in both my flask app and javascript using a logout button.
@@ -200,6 +198,7 @@ await fetch("/logout", { method: "GET" });
 window.location.href = "/login";
 });
 ```
+The methodologies above were included in the application.
 
 ## 7. README Structure
 The README file was an integral part of this project. It gives the first impression of the Github repository as well as explaining the purpose and value of the project. There are many tools and blogs online which give advice on how to structure a README file which can be overwhelming. I asked ChatGPT for its opinion.
