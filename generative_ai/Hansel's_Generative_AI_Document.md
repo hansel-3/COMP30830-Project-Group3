@@ -18,7 +18,8 @@ During the early writing stages, a basic non-modular approach was used to write 
 ChatGPT proceeded to list a number of possible reasons including:
 - initMap isn’t defined yet (most common)
 - You’re in an ES module (type="module")
-- Script order problem (very common with Google Maps)  
+- Script order problem (very common with Google Maps)
+
 Eventually upon reviweing the code again and considering the reasons explained, I narrowed down the problem and questioned whether &callback=initMap in the HTML script tag was the culprit. I then proceeded to ask:
 
 **Prompt:** Would callback cause this issue?  
