@@ -31,6 +31,8 @@ root/
 |---|-----static_stations.json                      # Stores station information
 |
 |---generative_ai/                                  # Gen AI documents for each collaborator    
+|---|-----Glory's AI_Chat_Log_COMP30830.docx
+|---|-----Hansel_Generative_AI_Document.md
 |---|-----Yuetong_Generative_AI_Chat_Document.md
 | 
 |---prediction-model/                           
@@ -50,7 +52,7 @@ root/
 |   |   |-----weather_background.jpeg
 |
 |   |-----javascript/
-|   |   |-----displayBikes.js                       # Renders bike availability
+|   |   |-----displayBikes.js                       # Renders bike availability in panel
 |   |   |-----displayPrediction.js                  # Renders bike availability prediction
 |   |   |-----displayStations.js                    # Displays stations on map
 |   |   |-----displayWeather.js                     # Renders weather data
@@ -61,7 +63,7 @@ root/
 |   |   |-----login.js                              # Login form logic
 |   |   |-----searchStationsList.js                 # Defines station search function
 |   |   |-----signup.js                             # Signup form logic
-|   |   |-----toggleMarkers.js                      # Renders live bike availability
+|   |   |-----toggleMarkers.js                      # Renders live bike availability on markers
 |
 |---templates/                                      # HTML templates
 |   |-----index.html                                # Main HTML document
@@ -252,7 +254,10 @@ The Flask `/predict` endpoint prepares the required feature vector, loads the tr
  - get_db() ensures that the app reuses a single database connection per request. This was optimized by Flask’s @app.teardown_appcontext.
  - Session-based user authentication using Flask.
 
-
+### Authors
+- Glory
+- Luna
+- Hansel
 
 
 
